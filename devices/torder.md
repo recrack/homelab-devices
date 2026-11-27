@@ -28,3 +28,9 @@
 ## 홈랩 활용 상태
 
 **조사 후보.** 해당 모델을 Home Assistant 패널로 전환한 사례나 전용 공개 도구는 찾지 못했습니다. 설명서에는 일반 Android 설정 화면이 나오지만, 매장에 공급된 펌웨어에서 일반 앱과 브라우저를 실행할 수 있는지는 실기기 확인이 필요합니다. [T2N 설명서 본문](https://device.report/manual/21007049)
+
+중고 매물 두 건에서 판매자는 `torder-pad` 4GB/32GB를 일반 태블릿으로 쓸 수 있다고 했고, `torder_pad` 3GB/16GB에서는 Play 스토어로 앱을 설치할 수 있다고 했습니다. 두 설명은 해당 매물에 한정된 판매자 보고입니다. 인증번호·펌웨어와 Home Assistant 동작 여부는 확인하지 못했습니다. [4GB/32GB 매물](https://m.bunjang.co.kr/products/341703803) · [3GB/16GB 매물](https://m.bunjang.co.kr/products/452359171)
+
+## 커뮤니티 조사
+
+네이버 카페의 게시글 본문은 읽을 수 없어 티오더 관련 사례를 확인하지 못했습니다. 카페 안에서 확인할 때는 `티오더`, `torder_pad`, `R10D`, `U10PRO`, `T2N`으로 검색합니다. [모두의 스마트홈](https://cafe.naver.com/stsmarthome) · [Do the SmartThings](https://cafe.naver.com/dothesmartthings)
