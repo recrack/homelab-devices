@@ -1,0 +1,18 @@
+.community-header { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 20px; }
+.community-connection { font-size: 18px; margin: 0; }
+.community-button { min-height: 52px; min-width: 120px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 18px; background: var(--card); color: var(--text); font-size: 16px; cursor: pointer; }
+.community-button:disabled { opacity: .45; cursor: default; }
+.community-button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.community-rooms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 18px 0; }
+.community-readings { display: flex; gap: 24px; flex-wrap: wrap; }
+.community-readings p { margin: 14px 0; }
+.community-readings small { display: block; color: var(--muted); font-size: 14px; }
+.community-readings strong { display: block; font-size: 32px; margin-top: 10px; }
+.community-readings strong span { font-size: 16px; color: var(--muted); }
+.community-actions { display: flex; gap: 12px; margin: 12px 0; }
+.community-actions button { flex: 1; }
+.community-rooms .room-card { min-width: 0; }
+.community-rooms h2 { font-size: 22px; margin: 0; }
+.operations-card { margin: 16px 0; }
+.maintenance-actions { margin-top: 12px; }
+@media(max-width: 760px) { .community-rooms { grid-template-columns: 1fr; } .community-readings strong { font-size: 28px; } }

@@ -1,0 +1,65 @@
+.insight-card { min-width: 0; padding: 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--text); }
+.insight-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 17px; }
+.insight-heading h3, .insight-heading h4 { margin: 0; font-size: 18px; line-height: 1.5; font-weight: 600; }
+.insight-heading > span { color: var(--muted); font-size: 12px; text-align: right; }
+.insight-heading-meta { min-width: 0; flex: 1 1 190px; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 2px 12px; color: var(--muted); font-size: 12px; line-height: 1.6; text-align: right; overflow-wrap: anywhere; }
+.insight-empty { display: flex; align-items: center; justify-content: center; min-height: 110px; margin: 0; padding: 18px; color: var(--muted); font-size: 14px; line-height: 1.7; text-align: center; }
+.insight-footnote { color: var(--muted); font-size: 12px; line-height: 1.65; margin: 13px 0 0; }
+.insight-card.forecast-strip { padding: 16px 18px; margin: 0 0 18px; }
+.forecast-strip .insight-heading, .environment-history .insight-heading { flex-wrap: wrap; gap: 6px 12px; margin-bottom: 12px; }
+.forecast-hours { display: grid; grid-template-columns: repeat(8, minmax(80px, 1fr)); gap: 8px; overflow-x: auto; padding: 5px; margin: -5px; scroll-padding: 8px; }
+.forecast-hour { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border-radius: 10px; background: var(--deep); font-variant-numeric: tabular-nums; text-align: center; }
+.forecast-hour time { color: var(--muted); font-size: 13px; }
+.forecast-hour svg { color: var(--primary-text); margin: 1px 0; }
+.forecast-condition { min-height: 32px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; line-height: 1.4; word-break: keep-all; }
+.forecast-temperature { color: var(--text); font-size: 23px; font-weight: 500; white-space: nowrap; }
+.forecast-temperature span { font-size: 13px; margin-left: 3px; color: var(--muted); }
+.forecast-rain, .forecast-amount { color: var(--muted); font-size: 11px; line-height: 1.4; white-space: nowrap; }
+.forecast-amount { margin-top: -2px; }
+.forecast-hour:focus-visible, .app-shell[data-navigation="remote"] .forecast-hour:focus { outline: 4px solid var(--primary-text); outline-offset: 1px; }
+.environment-history { padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--border); }
+.environment-history .insight-heading h4 { font-size: 14px; }
+.history-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.history-tabs button { min-height: 48px; min-width: 80px; padding: 9px 17px; border: 1px solid var(--border); border-radius: 9px; color: var(--muted); background: var(--card); font-size: 14px; }
+.history-tabs button[aria-pressed="true"] { color: var(--primary-text); background: var(--primary-soft); border-color: var(--accent-border); font-weight: 600; }
+.history-stats { min-width: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px 10px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.history-stats strong { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+.environment-chart { display: block; width: 100%; height: 106px; overflow: visible; color: var(--primary-text); }
+.history-grid { fill: none; stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 3 5; }
+.history-axis { display: flex; justify-content: space-between; margin-top: 7px; color: var(--muted); font-size: 11px; }
+.environment-history .insight-footnote { margin-top: 8px; font-size: 11px; }
+.panel-notifications { margin-bottom: 24px; border-color: var(--warning-border); }
+.panel-notifications .insight-heading { margin-bottom: 8px; }
+.notification-list { list-style: none; margin: 0; padding: 0; }
+.panel-notification { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; border-top: 1px solid var(--border); }
+.panel-notification:first-child { border-top: 0; }
+.panel-notification:last-child { padding-bottom: 0; }
+.notification-copy { min-width: 0; overflow-wrap: anywhere; }
+.notification-kind { display: block; color: var(--warning-text); font-size: 12px; margin-bottom: 6px; }
+.notification-copy h4 { margin: 0 0 5px; font-size: 19px; line-height: 1.5; }
+.notification-copy p { margin: 0; color: var(--text); font-size: 14px; line-height: 1.7; }
+.notification-copy time { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; }
+.panel-notification button, .alert-setting-actions button { flex-shrink: 0; min-width: 92px; min-height: 52px; padding: 12px 19px; border: 1px solid var(--border); border-radius: 10px; background: var(--primary-soft); color: var(--primary-text); font-size: 15px; font-weight: 600; }
+.panel-notification button:hover, .alert-setting-actions button:hover { border-color: var(--primary-text); }
+.alert-settings > .insight-footnote { margin: -8px 0 18px; }
+.alert-enabled { display: flex; align-items: center; gap: 12px; min-height: 52px; color: var(--text); font-size: 16px; }
+.alert-enabled input { width: 24px; height: 24px; accent-color: var(--primary-text); }
+.alert-setting-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; margin-top: 18px; }
+.alert-setting-fields > label { min-width: 0; display: flex; flex-direction: column; gap: 8px; color: var(--text); font-size: 13px; }
+.alert-number { display: flex; align-items: center; gap: 9px; }
+.alert-number input { width: 100%; min-width: 0; min-height: 52px; padding: 10px 12px; color: var(--text); background: var(--deep); border: 1px solid var(--border); border-radius: 9px; font-size: 19px; font-variant-numeric: tabular-nums; }
+.alert-number > span { flex-shrink: 0; color: var(--muted); font-size: 13px; }
+.alert-setting-fields small { color: var(--muted); font-size: 11px; }
+.alert-setting-actions { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 23px; }
+.alert-setting-actions p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.history-tabs button:focus-visible, .panel-notification button:focus-visible, .alert-settings input:focus-visible, .alert-settings button:focus-visible,
+.app-shell[data-navigation="remote"] .history-tabs button:focus, .app-shell[data-navigation="remote"] .panel-notification button:focus, .app-shell[data-navigation="remote"] .alert-settings input:focus, .app-shell[data-navigation="remote"] .alert-settings button:focus { outline: 4px solid var(--primary-text); outline-offset: 3px; }
+@media (max-width: 850px) { .forecast-hours { grid-template-columns: repeat(8, minmax(96px, 1fr)); }.insight-card { padding: 18px; } }
+@media (max-width: 520px) { .alert-setting-fields { grid-template-columns: 1fr; }.panel-notification { align-items: flex-start; gap: 12px; }.notification-copy h4 { font-size: 17px; }.panel-notification button { min-width: 76px; }.insight-heading { align-items: flex-start; } }
+
+.alert-enabled { padding: 10px 18px; border: 1px solid var(--border); border-radius: 9px; background: var(--deep); }
+.alert-number output { flex: 1; text-align: center; color: var(--text); font-size: 21px; font-variant-numeric: tabular-nums; }
+.alert-number output small { display: block; }
+.alert-number button { width: 52px; min-height: 52px; flex-shrink: 0; border: 1px solid var(--border); border-radius: 9px; background: var(--deep); color: var(--text); font-size: 22px; }
+.feature-settings-toggle { margin: 16px 0; min-height: 52px; padding: 10px 20px; border: 1px solid var(--border); border-radius: 9px; background: var(--card); color: var(--text); font: inherit; }
+.feature-settings { margin-bottom: 24px; }

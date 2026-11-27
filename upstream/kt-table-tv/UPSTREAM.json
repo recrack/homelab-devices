@@ -1,0 +1,10 @@
+{
+  "origin": "https://github.com/dasjjl-svg/KT_TABLE_TV",
+  "ref": "refs/heads/main",
+  "commit": "cd88afc87d3d0a022511b98341f425b57dddad90",
+  "license": "MIT",
+  "license_sha256": {
+    "LICENSE": "069387460fd8c3810bb4b7a725c32a69909335b0182cab68402524b4d3d5c7c0",
+    "THIRD_PARTY_NOTICES.md": "8083eb2624531b1b48022a25280430ea5af5fac5c2e3f3e6443fcbe71e2bef8f"
+  }
+}
