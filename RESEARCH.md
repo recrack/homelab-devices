@@ -23,3 +23,5 @@
 모델은 기존 자료를 검토합니다. 실기기에서 동작을 재현하는 단계는 사람이 수행합니다. GitHub Actions 표준 러너의 실행 시간과 Copilot AI 크레딧은 별도로 계산됩니다. 분석 세션의 [AI 크레딧 상한](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/set-session-limit)은 30으로 설정되어 있습니다.
 
 자동 생성 PR은 요약, 검증 근거, 병합 영향을 표시합니다. [Matt Pocock PR 스킬](https://github.com/mattpocock/skills/blob/main/skills/engineering/pr/SKILL.md)
+
+Actions에서 PR을 생성하려면 저장소 **Settings → Actions → General → Workflow permissions**에서 **Allow GitHub Actions to create and approve pull requests**를 허용해야 합니다. 리서치 워크플로는 초안 PR을 열고, 소스 동기화 워크플로는 아카이브 PR을 병합합니다. [GitHub Actions 권한 안내](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests)

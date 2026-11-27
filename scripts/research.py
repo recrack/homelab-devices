@@ -38,6 +38,10 @@ KOREAN_QUERIES = (
     "티오더", "포스기", "주문 태블릿",
 )
 URL = re.compile(r"https?://[^\s<>\"'\])]+")
+OUT_OF_SCOPE = re.compile(
+    r"\b(?:cve-\d{4}-\d+|exploit\w*|fastbrick|amonet)\b|익스플로잇|잠금\s*우회|보안\s*우회",
+    re.I,
+)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -326,6 +330,8 @@ def reviewed_rows(items, answer):
             continue
         if len(fields["support"]) < 12 or fields["support"] not in item["evidence"]:
             continue
+        if any(OUT_OF_SCOPE.search(value) for value in fields.values()):
+            continue
         if any(URL.search(fields[key]) for key in ("model", "finding", "limits")):
             continue
         used.add(row["id"])
@@ -353,10 +359,18 @@ are short Korean plain-text paraphrases, clearly attributed to the source. suppo
 substring of that candidate's evidence (12 to 250 characters, single line). Return [] if none qualify.
 Evidence follows as JSON:
 """
-    prompt = instructions + json.dumps([
-        {"id": index, **{key: item[key] for key in ("source", "title", "date", "description", "evidence")}}
-        for index, item in enumerate(items, 1)
-    ], ensure_ascii=False).replace("@", "＠")
+    payload = []
+    remaining = 96_000
+    for index, item in enumerate(items, 1):
+        if not item["evidence"]:
+            continue
+        row = {"id": index, **{key: item[key] for key in ("source", "title", "date", "description", "evidence")}}
+        encoded = json.dumps(row, ensure_ascii=False).replace("@", "＠")
+        remaining -= len(encoded.encode("utf-8")) + 2
+        if remaining < 0:
+            break
+        payload.append(encoded)
+    prompt = instructions + "[" + ",\n".join(payload) + "]"
     result = subprocess.run(
         ["copilot", "-s", "-p", prompt, "--max-ai-credits=30", "--no-color", "--no-ask-user",
          "--no-custom-instructions", "--disable-builtin-mcps", "--available-tools=report_intent",

@@ -43,6 +43,7 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(len(reviewed_rows([item], [row, row])), 1)
         self.assertEqual(reviewed_rows([item], [{**row, "support": "다른 기기에서 작동했습니다."}]), [])
         self.assertEqual(reviewed_rows([item], [{**row, "id": 2}]), [])
+        self.assertEqual(reviewed_rows([item], [{**row, "limits": "익스플로잇 설치 필요"}]), [])
 
     def test_job_outputs_exclude_original_excerpts(self):
         item = candidate("네이버 카페", "테스트 글", "https://cafe.naver.com/stsmarthome/123",
