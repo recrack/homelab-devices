@@ -27,6 +27,10 @@
 
 README에는 기존 개인 설치에서 일부 동작을 확인했다고 적혀 있습니다. 새로운 사용자의 WSL LAN 통신과 새 기기 전체 설치는 현장 검증이 필요하다고도 밝힙니다.
 
+## 별도 OS 구동 실험
+
+같은 SFF 작성자가 홈테이블 TV에서 LineageOS 23.2를 구동했다고 올렸습니다. 게시물 사진에서 부팅 화면과 Android TV 액세서리 검색 화면을 확인했습니다. 기기 라벨, 배포 이미지, 초기 설정 이후의 리모컨·네트워크·오디오 동작은 그 글에서 확인되지 않았습니다. 위 Home Assistant 패널 프로젝트의 문서상 지원 환경은 `CT1105-SB`의 Android 5.1.1입니다. [SFF 구동 보고](https://m.dcinside.com/board/sff/1803888) · [KT_TABLE_TV 지원 범위](https://github.com/dasjjl-svg/KT_TABLE_TV#지원-범위와-검증)
+
 ## 출처
 
 - [SFF 갤러리 1802709 원글](https://gall.dcinside.com/mgallery/board/view/?id=sff&no=1802709) — 기기 사양 보고와 프로젝트 소개

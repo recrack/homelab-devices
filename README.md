@@ -57,13 +57,15 @@ Toss Front 1.5세대, KT Table TV, Citaq H10-3, Echo Show에는 Home Assistant �
 | 기기 | 식별 정보 | 핵심 사양 | 상태·상세 |
 |---|---|---|---|
 | Npay Connect | Npay connect 1 / Face 1 | Android 15, 8인치 1280×800, 2×A75 + 6×A55, RAM 4GB, eMMC 32GB | 공개 툴 있음 · [문서](devices/naver-connect.md) |
-| Toss Front | 1세대 PLF00WH, 1.5세대 PLF02WH, 2세대 | 1.5세대 RK3399, 2세대 QCM4325; 1세대 칩셋 미상 | 세대별 도구, 1.5세대 HA 대시보드 사례 · [문서](devices/toss-front.md) |
+| Toss Front | 1세대 `PLF00WH`, 1.5세대 `PLF02WH`, 2세대 `PLF20WH` / `PLF20BK` | 1.5세대 RK3399, 2세대 QCM4325·RAM 3GB·저장공간 32GB·7인치 1280×800 | 1.5세대 HA 대시보드 사례 · [문서](devices/toss-front.md) |
+| Toss Terminal | `PLT00WH` / `PLT01WH`, Terminal 2 `PLT20WH` | PLT01WH는 SFF 보고 기준 RK3399·RAM 2GB·저장공간 16GB·7인치. PLT20WH는 공식 사양 기준 RAM 128MB·5인치·80mm 프린터 | 모델별 사양 조사 · [후보 문서](devices/toss-terminal.md) |
 | KT 기가지니 테이블 TV 더 블랙 | CT1105-SB | Hi3798CV200, 4×Cortex-A53, RAM 2GB, eMMC 8GB, 11.6인치 1920×1080 | HA 패널 프로젝트 · [문서](devices/kt-table-tv.md) |
 | Citaq H10-3 POS | CTE-RK3368-V1.0 | RK3368, 8×Cortex-A53, PowerVR G6110, RAM 2GB, eMMC 16GB, 10인치 1024×768, 80mm 프린터 | Android 10 포트와 HA 연동 · [문서](devices/citaq-h10-3.md) |
 | Amazon Echo Show 8 2세대 | A8H3N2 / `athena` | MT8183, 8인치 1280×800 HD, 13MP 카메라, 듀얼 스테레오 스피커, 듀얼밴드 Wi-Fi·Bluetooth | LineageOS/HA 이미지 · [문서](devices/amazon-echo-show.md) |
 | SUNMI V2 | T5930; 세대·구성 확인 필요 | Android 7.1, Cortex-A53 1.3/1.5GHz, RAM 1/2GB, 저장공간 8/16GB, 5.45인치 1440×720, 58mm 프린터 | 루팅 보고는 있으나 호환성 불확실 · [후보 문서](devices/sunmi-v2.md) |
 | CashNote Pay 단말기 | 정확한 모델 미공개 | Android 10 기반 AVOS, 5.5인치, RAM 2GB, 플래시 16GB, Cortex-A53 쿼드코어 | 사양만 확인; 공개 재활용 툴 미발견 · [후보 문서](devices/cashnote-pay.md) |
 | 티오더 주문 태블릿 | `T2N`, `U10PRO`, `R10D`, `P10HD` 관련 표기 | T2N FCC 문서 기준 UNISOC T610, RAM 4GB, 저장공간 32GB, 10.1인치 1920×1200 | 일반 앱 사용 보고, HA 구동 미확인 · [후보 문서](devices/torder.md) |
+| Huawei MatePad T 10 주문용 단말 | `AGRK-W09` | Kirin 710A, RAM 2GB, 9.7인치 1280×800, EMUI 10.1(Android 10) | SFF 사진에서 모델 식별, 주문 서비스·HA 구동 미확인 · [후보 문서](devices/huawei-matepad-t10.md) |
 
 ## 별도 사용 안내
 

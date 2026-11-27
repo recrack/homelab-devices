@@ -16,12 +16,14 @@
 |---|---|---|
 | Npay Connect | 기기 리서치, 백업·진단 도구 확인 | [기기 문서](devices/naver-connect.md), [homelab-naver-connect](https://github.com/recrack/homelab-naver-connect), [naver-connect-tool](https://github.com/pigeon-brain/naver-connect-tool), [diagnostics](https://github.com/pigeon-brain/naver-connect-diagnostics) |
 | Toss Front | 세대별 Android 실험 도구 확인 | [기기 문서](devices/toss-front.md), [homelab-tossfront](https://github.com/recrack/homelab-tossfront), [TillKit](https://github.com/YuruDeveloper/tillkit) |
+| Toss Terminal | 모델 번호로 초기형과 Terminal 2 식별 | [후보 문서](devices/toss-terminal.md) |
 | KT Table TV CT1105-SB | 기기를 Home Assistant 패널로 사용 | [기기 문서](devices/kt-table-tv.md), [설치 문서](https://github.com/dasjjl-svg/KT_TABLE_TV/tree/main/docs) |
 | Citaq H10-3 | Android 10 키오스크와 프린터·LED 연동 | [기기 문서](devices/citaq-h10-3.md), [INSTALL](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/INSTALL.md), [RECOVERY](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/RECOVERY.md), [Home Assistant 안내](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/HOME-ASSISTANT.md) |
 | Echo Show 5/8 | 기종별 LineageOS 이미지와 Kiosk Satellite 사용 | [기기 문서](devices/amazon-echo-show.md), [기종·잠금 해제 문서](https://github.com/jxlarrea/lineageos-echo-kiosk-satellite/tree/main/docs) |
 | SUNMI V2 | 연구 후보. 특정 V2 펌웨어에 대한 루트 보고 조사 | [후보 문서](devices/sunmi-v2.md) |
 | CashNote Pay | 공개 사양과 재활용 가능성 확인 | [후보 문서](devices/cashnote-pay.md) |
 | 티오더 | 모델·인증번호 확인 후 일반 앱 실행 가능 여부 확인 | [후보 문서](devices/torder.md) |
+| Huawei MatePad T 10 주문용 단말 | `AGRK-W09` 식별과 브라우저 실행 가능 여부 확인 | [후보 문서](devices/huawei-matepad-t10.md) |
 
 ## 기기별 사용 흐름
 
@@ -36,7 +38,7 @@
 
 ### Toss Front
 
-1. 뒷면 라벨을 확인해 PLF00WH, PLF02WH, 2세대 중 어느 기기인지 식별합니다.
+1. 뒷면 라벨에서 1세대 `PLF00WH`, 1.5세대 `PLF02WH`, 2세대 `PLF20WH` 또는 `PLF20BK`를 확인합니다.
 2. [세대별 문서](devices/toss-front.md)에서 일치하는 SoC와 도구를 선택합니다.
 3. 같은 기기 세대의 백업·진입 절차만 따릅니다. RKDevTool/Rockchip와 EDL/QCOM 절차를 섞지 않습니다.
 4. Home Assistant 패널이 목적이면 기기 문서의 [1.5세대 대시보드 사례](devices/toss-front.md#home-assistant-활용-사례)를 참고합니다.
