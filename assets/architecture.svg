@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="602" viewBox="0 0 900 602" role="img" aria-labelledby="title description" lang="ko">
+  <title id="title">homelab-devices 아키텍처</title>
+  <desc id="description">기기 라벨에서 모델과 펌웨어를 확인하고 카탈로그에서 사양과 호환성을 확인한 뒤 원본 프로젝트의 안내를 읽는다. Home Assistant는 Toss Front 1.5의 웹 대시보드, KT 테이블 TV의 Android 패널과 전용 서버, Citaq H10-3의 Companion 앱, Echo Show의 Kiosk Satellite와 연결된다.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#82a4bb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+      .title { fill: #f2f7fa; font-size: 30px; font-weight: 700; }
+      .section { fill: #a4e8dd; font-size: 19px; font-weight: 700; }
+      .label { fill: #f2f7fa; font-size: 20px; font-weight: 700; }
+      .detail { fill: #bed0e0; font-size: 16px; }
+      .node { fill: #172a3a; stroke: #345267; }
+      .arrow { fill: none; stroke: #82a4bb; stroke-width: 2; marker-end: url(#arrow); }
+      .link { fill: none; stroke: #82a4bb; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="900" height="602" rx="20" fill="#0e1b28"/>
+  <text x="34" y="53" class="title">homelab-devices 아키텍처</text>
+
+  <text x="34" y="99" class="section">기기 문서와 도구 찾기</text>
+  <g>
+    <rect x="34" y="117" width="230" height="98" rx="10" class="node"/>
+    <text x="52" y="154" class="label">기기 모델 확인</text>
+    <text x="52" y="185" class="detail">라벨 · 세대 · 펌웨어</text>
+
+    <path d="M274 166h28" class="arrow"/>
+    <rect x="312" y="117" width="280" height="98" rx="10" fill="#15373c" stroke="#4c9e95"/>
+    <text x="330" y="154" class="label">homelab-devices</text>
+    <text x="330" y="185" class="detail">기기 목록 · 사양 · 호환성 · 사용 안내</text>
+
+    <path d="M602 166h28" class="arrow"/>
+    <rect x="640" y="117" width="226" height="98" rx="10" class="node"/>
+    <text x="658" y="154" class="label">원본 프로젝트</text>
+    <text x="658" y="185" class="detail">도구 · 설치 및 복구 문서</text>
+  </g>
+
+  <path d="M34 246h832" stroke="#345267"/>
+  <text x="34" y="286" class="section">Home Assistant 연결 사례</text>
+
+  <g>
+    <rect x="34" y="309" width="233" height="53" rx="8" class="node"/>
+    <text x="51" y="343" class="label">Toss Front 1.5</text>
+    <path d="M277 335h23" class="arrow"/>
+    <rect x="310" y="309" width="310" height="53" rx="8" class="node"/>
+    <text x="327" y="343" class="label">웹 대시보드</text>
+
+    <rect x="34" y="373" width="233" height="53" rx="8" class="node"/>
+    <text x="51" y="407" class="label">KT 테이블 TV</text>
+    <path d="M277 399h23" class="arrow"/>
+    <rect x="310" y="373" width="310" height="53" rx="8" class="node"/>
+    <text x="327" y="407" class="label">Android 패널 + KT 패널 서버</text>
+
+    <rect x="34" y="437" width="233" height="53" rx="8" class="node"/>
+    <text x="51" y="471" class="label">Citaq H10-3</text>
+    <path d="M277 463h23" class="arrow"/>
+    <rect x="310" y="437" width="310" height="53" rx="8" class="node"/>
+    <text x="327" y="471" class="label">Companion 앱</text>
+
+    <rect x="34" y="501" width="233" height="53" rx="8" class="node"/>
+    <text x="51" y="535" class="label">Echo Show 5/8</text>
+    <path d="M277 527h23" class="arrow"/>
+    <rect x="310" y="501" width="310" height="53" rx="8" class="node"/>
+    <text x="327" y="535" class="label">Kiosk Satellite</text>
+
+    <path d="M620 335h35v192h-35M620 399h35M620 463h35M655 431h48" class="link"/>
+    <rect x="703" y="393" width="163" height="76" rx="10" fill="#15373c" stroke="#4c9e95"/>
+    <text x="784.5" y="437" text-anchor="middle" class="label" style="font-size: 17px">Home Assistant</text>
+  </g>
+</svg>

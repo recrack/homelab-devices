@@ -7,7 +7,7 @@
 | 라벨·세대 | 칩셋 | 현재 정리된 소프트웨어·도구 | 상태 |
 |---|---|---|---|
 | PLF00WH · 1세대 | 미상 | 검증된 설치 경로 없음 | 라벨만 확인됐고 칩셋·복구 방법은 미확인 |
-| PLF02WH · 1.5세대 | Rockchip RK3399 | LineageOS 18.1 GSI, Windows용 RKDevTool, [FrontKit15](https://github.com/recrack/homelab-tossfront) | 기존 개인 저장소에 세대별 자료와 실행 도구가 정리돼 있음 |
+| PLF02WH · 1.5세대 | Rockchip RK3399 | LineageOS 18.1 GSI, Windows용 RKDevTool | [공개 설치 가이드](https://github.com/FLOVER124/toss-front-plf02wh-lineageos-guide)에 PLF02WH 실기기 기록이 있음 |
 | PLF20WH / PLF20BK · 2세대 | Qualcomm QCM4325 | Android 15 GSI, [TillKit](https://github.com/YuruDeveloper/tillkit), [bkerler/edl](https://github.com/bkerler/edl) | EDL 기반 도구와 수동 CLI 경로를 별도 관리 |
 
 토스플레이스의 2세대 공개 사양은 7인치 1280×800 터치 LCD, RAM 3GB, 저장공간 32GB, 2W 스피커와 5MP 카메라 2개입니다. 화이트는 `PLF20WH`, 블랙은 `PLF20BK`로 식별합니다. [토스플레이스 제품 안내](https://toss.oopy.io/2c6714bb-fde7-81db-91df-fe45f7cf808f) · [국립전파연구원 인증](https://www.rra.go.kr/ko/license/A_b_popup_keyno.do?key_no=R-R-Tp0-PLF20WH)
@@ -41,7 +41,6 @@ Google Play는 앱이 요구하는 기능을 기기가 지원한다고 보고하
 
 ## 저장소
 
-- [homelab-tossfront](https://github.com/recrack/homelab-tossfront) — 세대별 문서, 도구, 실행 체크리스트
 - [TillKit](https://github.com/YuruDeveloper/tillkit) — 2세대 EDL용 Rust 도구, GPL-3.0
 - [bkerler/edl](https://github.com/bkerler/edl) — EDL 수동 작업용 공개 CLI
 - [rkdeveloptool](https://github.com/rockchip-linux/rkdeveloptool) — Rockchip 기기용 공개 CLI
@@ -49,12 +48,11 @@ Google Play는 앱이 요구하는 기능을 기기가 지원한다고 보고하
 ## 확인 주의
 
 - PLF02WH와 2세대는 칩셋, 진입 방식, 파티션 구조가 다릅니다. 도구·주소·이미지를 서로 섞지 않습니다.
-- 기존 저장소는 백업 후 진행, 기기별 이미지 확인, 세대 구분을 요구합니다. 플래싱이나 EDL 작업은 기기 상태를 바꿀 수 있습니다.
+- 플래싱이나 EDL 작업 전에 데이터를 백업하고 기기 모델과 이미지의 지원 범위를 확인합니다.
 - 위 결과는 특정 라벨과 커뮤니티 실험을 기준으로 정리했습니다. 모든 기기와 펌웨어에서의 호환성을 뜻하지 않습니다.
 
 ## 출처
 
-- [homelab-tossfront](https://github.com/recrack/homelab-tossfront) 저장소의 세대별 문서 및 출처 목록
 - [1.5세대 LineageOS 빌더](https://github.com/kyseong00/toss-front-lineageos-builder) · [설치 가이드](https://github.com/FLOVER124/toss-front-plf02wh-lineageos-guide)
 - [TillKit](https://github.com/YuruDeveloper/tillkit) · [bkerler/edl](https://github.com/bkerler/edl) · [rkdeveloptool](https://github.com/rockchip-linux/rkdeveloptool)
 - [SFF 1.5세대 안내글](https://gall.dcinside.com/mgallery/board/view/?id=sff&no=1728606) · [SFF 2세대 언락·GSI 안내](https://gall.dcinside.com/mgallery/board/view/?id=sff&no=1722612) · [SFF 분해·EDL 안내](https://gall.dcinside.com/mgallery/board/view/?id=sff&no=1750496)

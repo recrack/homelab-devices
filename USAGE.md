@@ -14,8 +14,8 @@
 
 | 기기 | 사용 목적 | 시작할 문서 |
 |---|---|---|
-| Npay Connect | 기기 리서치, 백업·진단 도구 확인 | [기기 문서](devices/naver-connect.md), [homelab-naver-connect](https://github.com/recrack/homelab-naver-connect), [naver-connect-tool](https://github.com/pigeon-brain/naver-connect-tool), [diagnostics](https://github.com/pigeon-brain/naver-connect-diagnostics) |
-| Toss Front | 세대별 Android 실험 도구 확인 | [기기 문서](devices/toss-front.md), [homelab-tossfront](https://github.com/recrack/homelab-tossfront), [TillKit](https://github.com/YuruDeveloper/tillkit) |
+| Npay Connect | 기기 리서치, 백업·진단 도구 확인 | [기기 문서](devices/naver-connect.md), [naver-connect-tool](https://github.com/pigeon-brain/naver-connect-tool), [diagnostics](https://github.com/pigeon-brain/naver-connect-diagnostics) |
+| Toss Front | 세대별 Android 실험 도구 확인 | [기기 문서](devices/toss-front.md), [1.5세대 설치 가이드](https://github.com/FLOVER124/toss-front-plf02wh-lineageos-guide), [2세대 TillKit](https://github.com/YuruDeveloper/tillkit) |
 | Toss Terminal | 모델 번호로 초기형과 Terminal 2 식별 | [후보 문서](devices/toss-terminal.md) |
 | KT Table TV CT1105-SB | 기기를 Home Assistant 패널로 사용 | [기기 문서](devices/kt-table-tv.md), [설치 문서](https://github.com/dasjjl-svg/KT_TABLE_TV/tree/main/docs) |
 | Citaq H10-3 | Android 10 키오스크와 프린터·LED 연동 | [기기 문서](devices/citaq-h10-3.md), [INSTALL](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/INSTALL.md), [RECOVERY](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/RECOVERY.md), [Home Assistant 안내](https://github.com/Crux4000/citaq-h10-android10/blob/main/docs/HOME-ASSISTANT.md) |

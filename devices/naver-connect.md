@@ -30,7 +30,6 @@ Npay Connect는 결제·리뷰·매장 운영용 Android 단말기입니다. 기
 
 | 프로젝트 | 용도 | 확인 범위 |
 |---|---|---|
-| [homelab-naver-connect](https://github.com/recrack/homelab-naver-connect) | 이 기기 관련 개인 리서치와 도구를 모은 비공개 저장소 | 별도 저장소 문서를 참조 |
 | [naver-connect-tool](https://github.com/pigeon-brain/naver-connect-tool) | Windows용 백업, 부트로더 언락, LineageOS 설치, ADB 앱 설치 도구 | README는 MT6768/MT6769 계열을 대상으로 명시합니다. 실제 기기의 SoC가 이 중 무엇인지는 공개 사양에서 확인하지 못했습니다. OS 설치는 사용자 데이터를 지우며 플래시 기록을 수행합니다. |
 | [naver-connect-diagnostics](https://github.com/pigeon-brain/naver-connect-diagnostics) | Android 진단 앱과 선택형 루트 하드웨어 브리지 | 작성자 README 기준 카메라, RGB LED, IC 카드 상태를 시험했습니다. MSR 물리 스와이프는 미검증이고 결제 NFC RF 조사는 진행 중입니다. 공개 APK의 실제 기기 설치도 미검증입니다. |
 

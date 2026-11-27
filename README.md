@@ -2,53 +2,11 @@
 
 결제 단말기와 매장용 패널, 스마트 디스플레이처럼 전용 목적으로 판매된 기기를 홈랩에서 재활용하는 사례와 도구를 모읍니다.
 
-**조사 갱신일: 2026-11-28** · 비공개 저장소 · 원본 코드를 포크하거나 복사하지 않고 기기별 사양, 호환 범위, 프로젝트와 사용 문서를 연결합니다.
+**조사 갱신일: 2026-11-28** · 기기별 사양, 호환 범위, 공개 프로젝트와 사용 문서를 연결합니다.
 
 ## 아키텍처
 
-```mermaid
-flowchart LR
-  subgraph devices[전용 기기]
-    Npay[Npay Connect]
-    Toss[Toss Front]
-    KT[KT Table TV CT1105-SB]
-    Citaq[Citaq H10-3]
-    Echo[Echo Show 5/8]
-    Sunmi[SUNMI V2 후보]
-  end
-
-  subgraph catalog[homelab-devices]
-    Index[기기 인덱스]
-    Specs[사양·검증 상태]
-    Guide[USAGE.md]
-    Index --> Specs --> Guide
-  end
-
-  subgraph projects[기기별 소프트웨어]
-    NTools[Connect Toolkit·Diagnostics]
-    TTools[세대별 Front 도구]
-    TPanel[Front 1.5 대시보드]
-    KApp[Android 패널 앱]
-    KServer[KT 패널 서버]
-    CPort[Android 10 포트]
-    EImage[LineageOS 18.1 이미지]
-    KS[Kiosk Satellite]
-    SRoot[SUNMI V2 Magisk/TWRP 보고]
-  end
-
-  HA[(Home Assistant)]
-  Npay --> NTools
-  Toss --> TTools
-  Toss --> TPanel
-  TPanel <--> HA
-  KT --> KApp
-  Citaq --> CPort
-  Echo --> EImage --> KS
-  KApp <--> KServer <--> HA
-  CPort <--> HA
-  KS <--> HA
-  Sunmi -. "호환성 미확인" .-> SRoot
-```
+![모델 확인에서 기기 문서와 원본 프로젝트로 이어지는 경로, 그리고 Toss Front 1.5·KT 테이블 TV·Citaq H10-3·Echo Show의 Home Assistant 연결 구성](assets/architecture.svg)
 
 Toss Front 1.5세대, KT Table TV, Citaq H10-3, Echo Show에는 Home Assistant 패널 활용 사례가 있습니다. 기기 문서에서 공개 도구와 작성자가 보고한 실기기 동작을 확인할 수 있습니다.
 
