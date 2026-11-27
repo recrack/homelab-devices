@@ -42,7 +42,7 @@
 2. [세대별 문서](devices/toss-front.md)에서 일치하는 SoC와 도구를 선택합니다.
 3. 같은 기기 세대의 백업·진입 절차만 따릅니다. RKDevTool/Rockchip와 EDL/QCOM 절차를 섞지 않습니다.
 4. Home Assistant 패널이 목적이면 기기 문서의 [1.5세대 대시보드 사례](devices/toss-front.md#home-assistant-활용-사례)를 참고합니다.
-5. 프론트 2에서 Spotify가 검색되지 않거나 USB 마이크를 연결할 때는 [Play 스토어와 USB 연결 조건](devices/toss-front.md#프론트-2의-spotify와-usb-마이크)을 확인합니다.
+5. USB 마이크는 [프론트 1.5의 호스트 모드 확인 방법](devices/toss-front.md#프론트-15의-usb-c-허브와-마이크)과 [프론트 2의 연결 사례](devices/toss-front.md#프론트-2의-spotify와-usb-마이크)를 참조합니다.
 
 ### KT 기가지니 테이블 TV
 

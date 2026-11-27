@@ -19,6 +19,12 @@
 - 모두의 스마트홈 작성자는 토스 프론트 1.5세대에 집 구조와 Home Assistant 기기를 표시하는 HTML 대시보드를 띄웠다고 보고했습니다. [1.5세대 대시보드 구동 후기](https://cafe.naver.com/stsmarthome/119146)
 - 다른 작성자는 토스 프론트에 Immich 사진을 띄우고, 두 번 탭하면 Home Assistant 대시보드로 전환되게 구성했습니다. 글에 기기 세대는 나와 있지 않습니다. 이 구성에 사용한 Immich Frame Controller는 Home Assistant 애드온이나 Docker로 실행하며 액자별 화면 주소를 제공합니다. [전자액자 활용 후기](https://cafe.naver.com/stsmarthome/119950) · [Immich Frame Controller 소스](https://github.com/hyungyunlim/immich-ha-sa) · [한국어 안내](https://immich-frame.junlim.org/ko/)
 
+## 프론트 1.5의 USB-C 허브와 마이크
+
+`PLF02WH`의 USB-C 전원 포트에서 USB 허브를 인식하거나 외장 USB 마이크로 녹음한 실기기 사례는 찾지 못했습니다. 공식 안내는 C타입 전원 연결을 설명합니다. 바닥의 5핀 microUSB를 PC에 연결한 기록은 있으며, 해당 포트의 OTG 호스트 동작은 미확인입니다. [토스플레이스 연결 안내](https://guide.tossplace.com/install/connect-overview) · [1.5세대 실기기 연결 기록](https://github.com/FLOVER124/toss-front-plf02wh-lineageos-guide/blob/main/README.md)
+
+호환성을 확인할 때는 전원을 통과시키는 허브와 기기 정격(12V 2.5A)을 충족하는 전원을 사용합니다. 정상 부팅 후 같은 허브에 USB 마우스를 연결해 포인터가 뜨는지 확인합니다. 마우스가 동작하면 Android가 해당 연결에서 USB 호스트로 동작한 것입니다. 이후 USB Audio Class 1 호환 마이크로 녹음해 실제 입력을 확인합니다. 부팅이나 마우스 인식에 실패하면 해당 허브와 전원 조합의 결과로 기록합니다. [세대별 전원 사양 보고](https://gall.dcinside.com/mgallery/board/view/?id=sunmitechnology&no=21) · [AOSP USB 오디오 조건](https://source.android.com/docs/core/audio/usb#host-mode)
+
 ## 프론트 2의 Spotify와 USB 마이크
 
 한 SFF 작성자는 커스텀 LineageOS에서 Spotify가 Play 스토어 검색에 나오지 않았지만, APK를 따로 설치하자 실행됐다고 보고했습니다. Android가 마이크 기능을 보고하도록 빌드를 수정한 뒤에는 Play 스토어 검색에 나왔고, 외장 USB 무선 마이크로 녹음도 했습니다. 순정 펌웨어에서의 Spotify 노출과 USB 마이크 동작은 미확인입니다. [SFF 실사용 보고](https://m.dcinside.com/board/sff/1741473)
