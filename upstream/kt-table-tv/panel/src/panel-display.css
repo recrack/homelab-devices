@@ -1,0 +1,23 @@
+.panel-display{--display-accent-border:#a8d9ef;--display-error:#b42318}
+:root[data-theme="dark"] .panel-display{--display-accent-border:#5a5a5a;--display-error:#ffaca5}
+.topbar .panel-top-status{display:flex;align-items:center;justify-content:flex-end;gap:14px 20px;flex-wrap:wrap;min-width:0}
+.panel-display{min-width:0}
+.panel-display-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.panel-display-actions>button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:var(--text);white-space:nowrap}
+.panel-display-actions>button:hover:not(:disabled){background:var(--primary-soft);border-color:var(--display-accent-border);color:var(--primary-text)}
+.panel-idle-setting{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);white-space:nowrap}
+.panel-idle-setting select{min-height:48px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font:inherit;font-size:13px;padding:8px 7px;cursor:pointer}
+.panel-idle-setting select:focus-visible{outline:3px solid var(--mint);outline-offset:4px}
+.panel-display-note{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.7;text-align:right;max-width:440px;overflow-wrap:anywhere}
+.panel-display-error{color:var(--display-error)}
+.panel-standby{position:fixed;inset:0;z-index:10000;min-height:100dvh;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;background:#000;color:#bcbcbc;touch-action:none;user-select:none;outline:none;padding:32px 20px;text-align:center;cursor:pointer}
+
+
+.panel-standby time{font-size:clamp(80px,16vw,200px);font-weight:250;line-height:1.15;letter-spacing:-.055em;font-variant-numeric:tabular-nums;color:#bcbcbc}
+.panel-standby-date{font-size:clamp(14px,2vw,23px);letter-spacing:.08em;color:#8f8f8f;margin:17px 0 0;line-height:1.8}
+.panel-wake-hint{position:absolute;bottom:12vh;font-size:14px;line-height:1.8;color:#808080;margin:0 20px}
+.panel-wake-button{position:absolute;bottom:4vh;min-height:48px;padding:10px 18px;border:1px solid #333;border-radius:10px;background:transparent;color:#a3a3a3;font-size:14px}
+.panel-wake-button:focus-visible{outline:2px solid #bcbcbc;outline-offset:5px}
+@media(max-width:1200px){.topbar{align-items:flex-start}.topbar .panel-top-status{gap:10px;max-width:500px}.panel-top-status>.connection-pill{flex-basis:100%;justify-content:flex-end}.panel-display-actions{gap:7px}}
+@media(max-width:650px){.topbar{flex-wrap:wrap}.topbar .panel-top-status{max-width:none;width:100%;justify-content:space-between;gap:13px}.panel-top-status>.connection-pill{flex-basis:auto;justify-content:flex-start}.panel-display{width:100%}.panel-display-actions{justify-content:flex-start;gap:8px}.panel-display-actions>button{min-height:48px;font-size:13px;flex:1}.panel-idle-setting{justify-content:space-between;flex-basis:100%;font-size:12px}.panel-idle-setting select{min-height:48px;font-size:13px;min-width:106px}.panel-display-note{text-align:left;max-width:none}.panel-standby-date{letter-spacing:0}.panel-wake-hint{font-size:14px}}
+@media(max-height:450px){.panel-standby time{font-size:90px}.panel-standby-date{margin-top:7px;font-size:14px}.panel-wake-hint{bottom:62px;font-size:14px}.panel-wake-button{bottom:10px;min-height:48px;font-size:14px}}

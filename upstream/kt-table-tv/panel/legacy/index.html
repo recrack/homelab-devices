@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="color-scheme" content="dark">
+  <title>우리 집</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { background: #0d0d0d; color: #eeeeee; font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; font-size: 18px; border-top: 4px solid #555555; }
+    button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    button:disabled { cursor: default; opacity: .45; }
+    button:focus, .washer-card:focus { outline: 5px solid #00638e; outline-offset: 3px; box-shadow: inset 0 0 0 2px #ffffff; }
+    .page { max-width: 1360px; margin: 0 auto; padding: 16px 32px 12px; }
+    .header { min-height: 104px; position: relative; }
+    .header:after { content: ""; display: block; clear: both; }
+    .screen-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    .clock { float: left; width: 210px; text-align: left; border-radius: 8px; }
+    .clock-time { font-size: 52px; font-weight: 400; letter-spacing: 1px; }
+    .clock-date { margin-top: 4px; font-size: 18px; color: #606873; }
+    .weather { margin: 7px 354px 0 234px; padding-left: 24px; border-left: 1px solid #dce2e7; }
+    .weather-label { max-width: 100%; margin: 0 0 5px; color: #606873; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .weather-summary { margin: 0 0 5px; font-size: 27px; line-height: 1.25; }
+    .weather-source { margin: 0; color: #606873; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .connection { float: right; width: 330px; margin: 0 0 8px; text-align: right; color: #606873; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; background: #7b8791; }
+    .connection.connected .status-dot { background: #007db3; }
+    .connection.connected .status-label { color: #00709f; }
+    .connection.error .status-dot { background: #b45309; }
+    .connection.error .status-label { color: #9a4307; }
+    .updated { display: block; margin: 3px 0 0; color: #606873; font-size: 13px; }
+    .refresh { display: inline-block; margin-top: 8px; border: 1px solid #c9d9e2; background: #ffffff; color: #00709f; border-radius: 8px; min-width: 120px; min-height: 48px; padding: 8px 15px; font-size: 15px; }
+    .rooms { overflow: hidden; padding: 7px; margin: 0 -7px; }
+    .room { width: 48.8%; min-height: 320px; float: left; background: #ffffff; border: 1px solid #dce2e7; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 2px rgba(0, 0, 0, .04); }
+    .room + .room { float: right; }
+    .room-heading { height: 38px; margin-bottom: 8px; }
+    .room-symbol { display: inline-block; vertical-align: middle; text-align: center; width: 36px; height: 36px; line-height: 36px; margin-right: 12px; border-radius: 50%; color: #007db3; background: #e5f5fd; font-size: 21px; }
+    h2 { display: inline-block; vertical-align: middle; margin: 0; font-size: 23px; font-weight: 600; }
+    .readings { height: 88px; border-bottom: 1px solid #e5e9ed; margin-bottom: 10px; }
+    .reading { float: left; width: 55%; }
+    .reading.humidity { width: 45%; padding-left: 12px; }
+    .reading-label { color: #606873; font-size: 14px; margin: 0 0 6px; }
+    .reading-value { margin: 0; font-size: 43px; line-height: 1.2; letter-spacing: -1px; font-weight: 400; }
+    .humidity .reading-value { color: #007db3; }
+    .unit { font-size: 19px; letter-spacing: 0; margin-left: 5px; color: #606873; }
+    .co2-reading { display: none; overflow: hidden; margin: -4px 0 8px; min-height: 34px; }
+    .co2-reading .reading-label { float: left; margin: 7px 8px 0 0; }
+    .co2-value { float: right; margin: 0; font-size: 27px; line-height: 1.3; white-space: nowrap; }
+    .co2-value .unit { font-size: 16px; }
+    .bedroom-readings.has-co2 { height: auto; min-height: 88px; }
+    .bedroom-readings:after { content: ""; display: block; clear: both; }
+    .bedroom-readings.has-co2 .reading { width: 33%; }
+    .bedroom-readings.has-co2 .reading.humidity { width: 27%; }
+    .bedroom-readings.has-co2 .reading.co2-reading { width: 40%; padding-left: 12px; margin: 0; min-height: 0; overflow: visible; }
+    .bedroom-readings .co2-reading .reading-label { float: none; margin: 0 0 6px; }
+    .bedroom-readings .co2-value { float: none; font-size: 36px; line-height: 1.45; }
+    .bedroom-readings.has-co2 .reading-value { white-space: nowrap; }
+    .bedroom-readings .co2-value .unit { font-size: 14px; margin-left: 4px; }
+    @media (max-width: 1100px) {
+      .bedroom-readings.has-co2 { padding-bottom: 8px; }
+      .bedroom-readings.has-co2 .reading-value { font-size: 36px; line-height: 1.2; }
+      .bedroom-readings.has-co2 .co2-value { font-size: 30px; line-height: 1.44; }
+      .bedroom-readings.has-co2 .unit { display: block; margin-left: 0; font-size: 14px; }
+    }
+    .section-label { margin: 0 0 6px; color: #414952; font-size: 15px; }
+    .actions { height: 64px; }
+    .action { float: left; width: 48%; height: 64px; border: 1px solid #d5dfe6; border-radius: 10px; color: #414952; background: #f5f7f9; font-size: 20px; font-weight: 600; }
+    .action + .action { float: right; }
+    .action-icon { display: inline-block; width: 26px; height: 26px; margin-right: 9px; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .action-label { display: inline-block; vertical-align: middle; }
+    .action.pending .action-icon { display: none; }
+    .action.on { background: #e5f5fd; border-color: #a8dff8; color: #006f9e; }
+    .action:active { background: #c9ecfc; border-color: #007db3; }
+    .action.pending { background: #007db3; border-color: #007db3; color: #ffffff; }
+    .washers { display: none; clear: both; padding-top: 12px; }
+    .washer-card { margin: 0 0 12px; padding: 14px 18px; border: 1px solid #dce2e7; border-radius: 12px; background: #ffffff; }
+    .washer-title { max-width: 100%; word-wrap: break-word; margin: 0 12px 0 0; font-size: 22px; }
+    .washer-room { display: inline-block; color: #606873; font-size: 14px; }
+    .washer-status { max-width: 100%; word-wrap: break-word; display: block; margin: 4px 0 0; color: #00709f; font-size: 20px; }
+    .washer-metrics { margin: 10px 0 0; overflow: hidden; }
+    .washer-metric { float: left; width: 33.3%; margin: 0; padding-right: 16px; }
+    .washer-metric-label { display: block; margin-bottom: 5px; color: #606873; font-size: 13px; }
+    .washer-metric-value { display: block; color: #212121; font-size: 18px; line-height: 1.5; }
+    .washer-note { margin: 2px 0 0; color: #606873; font-size: 13px; line-height: 1.5; word-wrap: break-word; }
+    .washer-note:empty { display: none; }
+    .completion-banner { display: none; position: fixed; z-index: 20; left: 28px; right: 28px; top: 16px; padding: 20px 166px 20px 24px; border: 2px solid #007db3; border-radius: 12px; background: #ffffff; color: #212121; box-shadow: 0 6px 24px rgba(0, 0, 0, .2); }
+    .completion-title { display: block; margin: 0 0 8px; font-size: 25px; }
+    .completion-detail { margin: 0; font-size: 16px; line-height: 1.5; word-wrap: break-word; }
+    .completion-confirm { position: absolute; top: 24px; right: 24px; min-width: 116px; min-height: 52px; border: 1px solid #007db3; border-radius: 9px; background: #e5f5fd; color: #006f9e; font-size: 19px; }
+    .footer { clear: both; padding-top: 8px; }
+    .message { line-height: 1.5; margin: 0; color: #00709f; font-size: 14px; }
+    .message.error { color: #9a4307; }
+    .remote-hint { margin: 0 0 7px; color: #414952; font-size: 15px; line-height: 1.5; }
+    .message:empty { display: none; }
+    .message:not(:empty) + .note { display: none; }
+    .note { margin: 0; color: #606873; font-size: 13px; line-height: 1.5; }
+    html[data-theme="dark"] body { background: #0d0d0d; color: #eeeeee; border-top-color: #555555; }
+    html[data-theme="dark"] button:focus,
+    html[data-theme="dark"] .washer-card:focus { outline-color: #ffffff; box-shadow: inset 0 0 0 2px #777777; }
+    html[data-theme="dark"] .clock-date,
+    html[data-theme="dark"] .weather-label,
+    html[data-theme="dark"] .weather-source,
+    html[data-theme="dark"] .connection,
+    html[data-theme="dark"] .updated,
+    html[data-theme="dark"] .reading-label,
+    html[data-theme="dark"] .unit,
+    html[data-theme="dark"] .washer-room,
+    html[data-theme="dark"] .washer-metric-label,
+    html[data-theme="dark"] .washer-note,
+    html[data-theme="dark"] .note { color: #b3b3b3; }
+    html[data-theme="dark"] .refresh { background: #262626; border-color: #555555; color: #eeeeee; }
+    html[data-theme="dark"] .status-dot { background: #8c8c8c; }
+    html[data-theme="dark"] .connection.connected .status-dot { background: #dddddd; }
+    html[data-theme="dark"] .connection.connected .status-label,
+    html[data-theme="dark"] .message { color: #dddddd; }
+    html[data-theme="dark"] .connection.error .status-dot { background: #ffb877; }
+    html[data-theme="dark"] .connection.error .status-label,
+    html[data-theme="dark"] .message.error { color: #ffb877; }
+    html[data-theme="dark"] .washer-card,
+    html[data-theme="dark"] .room { background: #1b1b1b; border-color: #3b3b3b; box-shadow: none; }
+    html[data-theme="dark"] .room-symbol { color: #dddddd; background: #303030; }
+    html[data-theme="dark"] .readings,
+    html[data-theme="dark"] .weather { border-color: #3b3b3b; }
+    html[data-theme="dark"] .washer-status,
+    html[data-theme="dark"] .washer-metric-value,
+    html[data-theme="dark"] .humidity .reading-value { color: #eeeeee; }
+    html[data-theme="dark"] .section-label,
+    html[data-theme="dark"] .remote-hint { color: #dddddd; }
+    html[data-theme="dark"] .action { background: #262626; border-color: #555555; color: #eeeeee; }
+    html[data-theme="dark"] .action.on { background: #383838; border-color: #666666; color: #ffffff; }
+    html[data-theme="dark"] .action:active { background: #505050; border-color: #ffffff; }
+    html[data-theme="dark"] .completion-banner { background: #1b1b1b; color: #ffffff; border-color: #b3b3b3; }
+    html[data-theme="dark"] .completion-confirm { background: #383838; color: #ffffff; border-color: #777777; }
+    html[data-theme="dark"] .action.pending { background: #444444; border-color: #cccccc; color: #ffffff; }
+    @media (max-width: 900px) {
+      .weather { clear: both; margin: 0; padding: 12px 0 0; border-left: 0; border-top: 1px solid #3b3b3b; }
+    }
+    @media (max-width: 800px) {
+      .page { padding: 14px 20px; }
+      .weather-summary { font-size: 23px; }
+      .room { padding: 14px 16px; }
+      .reading-value { font-size: 36px; }
+      .unit { font-size: 17px; }
+    }
+    @media (max-width: 580px) {
+      .clock { width: 45%; }
+      .clock-time { font-size: 42px; }
+      .clock-date { font-size: 15px; }
+      .connection { width: 53%; font-size: 12px; }
+      .updated { font-size: 12px; }
+      .refresh { min-width: 100px; min-height: 48px; font-size: 14px; }
+      .weather-label { display: block; }
+      .weather-summary { display: inline-block; }
+      .room, .room + .room { float: none; width: 100%; min-height: 0; margin-bottom: 16px; }
+      .readings { height: 88px; }
+      .completion-banner { left: 12px; right: 12px; padding: 17px 120px 17px 17px; }
+      .completion-title { font-size: 21px; }
+      .completion-detail { font-size: 14px; }
+      .completion-confirm { right: 16px; top: 24px; min-width: 86px; }
+      .washer-card { padding: 14px 16px; }
+      .washer-status { display: block; margin: 4px 0 0; }
+      .washer-metric { width: 100%; margin-bottom: 10px; padding-right: 0; }
+    }
+
+    .feature-card { clear: both; margin: 12px 0; padding: 14px 18px; border: 1px solid #dce2e7; border-radius: 12px; background: #fff; }
+    .feature-card h2 { font-size: 21px; margin: 0 12px 8px 0; }
+    .feature-note { color: #606873; font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+    .maintenance-summary { font-size: 15px; line-height: 1.6; margin: 0; }
+    .maintenance-summary strong { margin-right: 12px; }
+    .maintenance-details { display: inline-block; margin-right: 16px; }
+    .feature-button { min-height: 52px; margin: 4px 6px 4px 0; padding: 10px 16px; border: 1px solid #c9d9e2; border-radius: 9px; background: #f5f7f9; color: #212121; font-size: 17px; }
+    .card-heading { margin-bottom: 8px; }
+    .card-heading:after { content: ""; display: block; clear: both; }
+    .card-title { float: left; max-width: 100%; margin: 0 12px 0 0; }
+    .card-heading h2 { margin-bottom: 0; }
+    .card-title .feature-button { margin-top: 0; margin-bottom: 0; }
+    .card-helper { float: right; max-width: 58%; margin: 4px 0 0; text-align: right; font-size: 13px; line-height: 1.5; word-wrap: break-word; }
+    .history .card-heading { margin-bottom: 2px; }
+    .history .card-helper { max-width: 52%; }
+    .washer-heading .card-title { max-width: 40%; }
+    .washer-heading .washer-room { display: block; font-size: 13px; }
+    .favorite-button { min-width: 180px; text-align: left; }
+    .forecast-card { padding-top: 12px; padding-bottom: 12px; }
+    .forecast-card:focus { outline: 5px solid #00638e; outline-offset: 3px; box-shadow: inset 0 0 0 2px #ffffff; }
+    html[data-theme="dark"] .forecast-card:focus { outline-color: #ffffff; box-shadow: inset 0 0 0 2px #777777; }
+    .forecast-items { overflow: hidden; }
+    .forecast-item { float: left; width: 12.5%; padding: 4px 8px; border-left: 1px solid #e5e9ed; }
+    .forecast-item:first-child { border-left: 0; }
+    .forecast-item p { margin: 4px 0; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+    .forecast-item .forecast-temp { font-size: 25px; }
+    .forecast-item .forecast-rain { color: #606873; font-size: 12px; line-height: 1.5; }
+    .notification-row { position: relative; padding: 14px 112px 14px 0; border-top: 1px solid #dce2e7; }
+    .notification-row h3 { font-size: 20px; margin: 0 0 6px; }
+    .notification-row p { font-size: 15px; margin: 0; line-height: 1.6; overflow-wrap: break-word; }
+    .notification-row button { position: absolute; right: 0; top: 10px; min-width: 90px; }
+    .history { margin-top: 12px; border-top: 1px solid #dce2e7; padding-top: 8px; }
+    .history-graph { display: block; width: 100%; height: 110px; color: #007db3; }
+    .history-path { stroke: currentColor; stroke-width: 2.5; fill: none; }
+    .history-grid { stroke: #dce2e7; stroke-width: 1; fill: none; }
+    .history-summary { margin: 4px 0; color: #606873; font-size: 13px; }
+    .history .feature-button { font-size: 15px; padding: 7px 14px; }
+    .feature-button[aria-pressed="true"] { border-color: #007db3; background: #e5f5fd; color: #006f9e; }
+    .setting-row { padding: 8px 0; border-bottom: 1px solid #dce2e7; }
+    .setting-row > span { display: inline-block; min-width: 200px; font-size: 16px; }
+    .favorite-edit-row { padding: 4px 0; }
+    .favorite-edit-row .favorite-choice { width: 65%; text-align: left; }
+    .favorite-edit-row .favorite-order { min-width: 72px; }
+    html[data-theme="dark"] .feature-card { background: #1b1b1b; border-color: #3b3b3b; }
+    html[data-theme="dark"] .feature-button { background: #262626; color: #eee; border-color: #555; }
+    html[data-theme="dark"] .feature-button[aria-pressed="true"] { background: #383838; color: #fff; border-color: #aaa; }
+    html[data-theme="dark"] .feature-note, html[data-theme="dark"] .forecast-rain, html[data-theme="dark"] .history-summary { color: #b3b3b3; }
+    html[data-theme="dark"] .history-graph { color: #eee; }
+    html[data-theme="dark"] .forecast-item, html[data-theme="dark"] .notification-row, html[data-theme="dark"] .history, html[data-theme="dark"] .setting-row { border-color: #3b3b3b; }
+    html[data-theme="dark"] .history-grid { stroke: #444; }
+    @media (max-width: 800px) { .forecast-item { width: 25%; }.forecast-item:nth-child(4n+1) { clear: left; border-left: 0; }.feature-card { padding: 12px 16px; }.favorite-edit-row .favorite-choice { width: 55%; }.setting-row > span { display: block; }.favorite-button { min-width: 45%; } }
+    .weekly-room { margin-top: 12px; padding: 12px; border: 1px solid #dce2e7; border-radius: 10px; }
+    .weekly-room:focus { outline: 5px solid #00638e; outline-offset: 3px; }
+    .weekly-room h3 { margin: 0 0 8px; font-size: 21px; }
+    .weekly-metric { margin: 8px 0; font-size: 15px; line-height: 1.6; white-space: pre-line; }
+    html[data-theme="dark"] .weekly-room { border-color: #444; }
+    html[data-theme="dark"] .weekly-room:focus { outline-color: #fff; }
+    .standby { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 50; background: #050505; color: #e6e6e6; text-align: center; padding-top: 18vh; }
+    .standby-time { display: block; font-size: 112px; font-weight: 300; letter-spacing: 3px; }
+    .standby-date { font-size: 26px; color: #b3b3b3; margin: 18px 0 40px; }
+    .standby-hint { font-size: 18px; color: #888; }
+    @media (max-width: 580px) {
+      .card-title, .card-helper, .history .card-helper, .washer-heading .card-title { float: none; max-width: 100%; text-align: left; }
+      .card-helper { margin-top: 4px; }
+      .standby-time { font-size: 76px; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="completion-banner" id="completion-banner" role="alert" aria-atomic="true">
+    <h2 class="completion-title">세탁이 끝났어요</h2>
+    <p class="completion-detail" id="completion-detail"></p>
+    <button class="completion-confirm focusable" id="completion-confirm" type="button" disabled>확인</button>
+  </aside>
+  <main class="page">
+    <header class="header">
+      <h1 class="screen-reader-only">스마트홈 제어</h1>
+      <div class="clock" aria-label="현재 시각"><div class="clock-time" id="clock-time">--:--</div><div class="clock-date" id="clock-date"></div></div>
+      <div class="connection" id="connection" role="status">
+        <span class="status-dot"></span><span class="status-label" id="status">우리 집 정보를 불러오고 있어요.</span><span class="updated" id="updated"></span>
+        <button class="refresh focusable" id="refresh" type="button">새로고침</button>
+      </div>
+      <div class="weather" aria-label="현재 날씨"><p class="weather-label" id="weather-location">현재 날씨</p><p class="weather-summary" id="weather-summary">날씨 정보 없음</p><p class="weather-source" id="weather-source"></p></div>
+    </header>
+    <section class="feature-card" id="favorites-section" aria-label="리모컨 즐겨찾기" style="display:none">
+      <div class="card-heading"><div class="card-title"><h2>즐겨찾기</h2><button class="feature-button focusable" id="favorites-edit" type="button" aria-expanded="false" aria-controls="favorites-editor">편집</button></div><p class="feature-note card-helper">한 번 누르면 실행 요청을 보냅니다. 기기의 실제 반응을 확인해 주세요.</p></div>
+      <div id="favorite-actions"><button class="feature-button favorite-button focusable" id="favorite-0" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-1" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-2" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-3" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-4" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-5" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-6" type="button" disabled style="display:none"></button><button class="feature-button favorite-button focusable" id="favorite-7" type="button" disabled style="display:none"></button></div>
+      <div id="favorites-editor" style="display:none"><div class="favorite-edit-row" id="favorite-edit-row-0" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-0" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-0" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-0" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-1" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-1" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-1" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-1" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-2" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-2" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-2" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-2" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-3" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-3" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-3" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-3" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-4" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-4" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-4" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-4" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-5" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-5" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-5" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-5" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-6" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-6" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-6" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-6" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-7" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-7" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-7" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-7" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-8" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-8" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-8" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-8" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-9" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-9" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-9" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-9" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-10" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-10" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-10" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-10" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-11" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-11" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-11" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-11" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-12" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-12" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-12" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-12" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-13" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-13" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-13" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-13" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-14" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-14" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-14" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-14" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><div class="favorite-edit-row" id="favorite-edit-row-15" style="display:none"><button class="feature-button favorite-choice focusable" id="favorite-choice-15" type="button"></button><button class="feature-button favorite-order focusable" id="favorite-up-15" type="button" aria-label="즐겨찾기 앞으로">앞으로</button><button class="feature-button favorite-order focusable" id="favorite-down-15" type="button" aria-label="즐겨찾기 뒤로">뒤로</button></div><p class="feature-note" id="favorites-edit-note">최대 8개 · 항목을 눌러 추가·해제하고 앞뒤 버튼으로 순서를 정하세요.</p><button class="feature-button focusable" id="favorites-save" type="button">즐겨찾기 저장</button><button class="feature-button focusable" id="favorites-cancel" type="button">취소</button></div>
+    </section>
+    <section class="feature-card" id="panel-notifications" aria-label="환경과 연결 알림" aria-live="polite" style="display:none"><h2>알림</h2><div class="notification-row" id="notification-row-0" style="display:none"><h3 id="notification-title-0"></h3><p id="notification-message-0"></p><button class="feature-button focusable" id="notification-dismiss-0" type="button">확인</button></div><div class="notification-row" id="notification-row-1" style="display:none"><h3 id="notification-title-1"></h3><p id="notification-message-1"></p><button class="feature-button focusable" id="notification-dismiss-1" type="button">확인</button></div><div class="notification-row" id="notification-row-2" style="display:none"><h3 id="notification-title-2"></h3><p id="notification-message-2"></p><button class="feature-button focusable" id="notification-dismiss-2" type="button">확인</button></div><div class="notification-row" id="notification-row-3" style="display:none"><h3 id="notification-title-3"></h3><p id="notification-message-3"></p><button class="feature-button focusable" id="notification-dismiss-3" type="button">확인</button></div><div class="notification-row" id="notification-row-4" style="display:none"><h3 id="notification-title-4"></h3><p id="notification-message-4"></p><button class="feature-button focusable" id="notification-dismiss-4" type="button">확인</button></div><div class="notification-row" id="notification-row-5" style="display:none"><h3 id="notification-title-5"></h3><p id="notification-message-5"></p><button class="feature-button focusable" id="notification-dismiss-5" type="button">확인</button></div><div class="notification-row" id="notification-row-6" style="display:none"><h3 id="notification-title-6"></h3><p id="notification-message-6"></p><button class="feature-button focusable" id="notification-dismiss-6" type="button">확인</button></div><div class="notification-row" id="notification-row-7" style="display:none"><h3 id="notification-title-7"></h3><p id="notification-message-7"></p><button class="feature-button focusable" id="notification-dismiss-7" type="button">확인</button></div><p class="feature-note" id="notification-more"></p></section>
+    <section class="feature-card forecast-card focusable" id="forecast-section" tabindex="0" aria-label="시간별 날씨 예보"><div class="card-heading"><h2 class="card-title">시간별 예보</h2><p class="feature-note card-helper" id="forecast-note">예보를 기다리고 있어요.</p></div><div class="forecast-items"><div class="forecast-item" id="forecast-item-0" style="display:none"><p id="forecast-time-0"></p><p id="forecast-condition-0"></p><p class="forecast-temp" id="forecast-temp-0"></p><p class="forecast-rain" id="forecast-rain-0"></p></div><div class="forecast-item" id="forecast-item-1" style="display:none"><p id="forecast-time-1"></p><p id="forecast-condition-1"></p><p class="forecast-temp" id="forecast-temp-1"></p><p class="forecast-rain" id="forecast-rain-1"></p></div><div class="forecast-item" id="forecast-item-2" style="display:none"><p id="forecast-time-2"></p><p id="forecast-condition-2"></p><p class="forecast-temp" id="forecast-temp-2"></p><p class="forecast-rain" id="forecast-rain-2"></p></div><div class="forecast-item" id="forecast-item-3" style="display:none"><p id="forecast-time-3"></p><p id="forecast-condition-3"></p><p class="forecast-temp" id="forecast-temp-3"></p><p class="forecast-rain" id="forecast-rain-3"></p></div><div class="forecast-item" id="forecast-item-4" style="display:none"><p id="forecast-time-4"></p><p id="forecast-condition-4"></p><p class="forecast-temp" id="forecast-temp-4"></p><p class="forecast-rain" id="forecast-rain-4"></p></div><div class="forecast-item" id="forecast-item-5" style="display:none"><p id="forecast-time-5"></p><p id="forecast-condition-5"></p><p class="forecast-temp" id="forecast-temp-5"></p><p class="forecast-rain" id="forecast-rain-5"></p></div><div class="forecast-item" id="forecast-item-6" style="display:none"><p id="forecast-time-6"></p><p id="forecast-condition-6"></p><p class="forecast-temp" id="forecast-temp-6"></p><p class="forecast-rain" id="forecast-rain-6"></p></div><div class="forecast-item" id="forecast-item-7" style="display:none"><p id="forecast-time-7"></p><p id="forecast-condition-7"></p><p class="forecast-temp" id="forecast-temp-7"></p><p class="forecast-rain" id="forecast-rain-7"></p></div></div></section>
+    <section class="rooms" aria-label="방별 실내 환경과 에어컨">
+      <article class="room">
+        <div class="room-heading"><span class="room-symbol" aria-hidden="true">⌂</span><h2 id="living-name">방 1</h2></div>
+        <div class="readings">
+          <div class="reading"><p class="reading-label">온도</p><p class="reading-value"><span id="living-temperature">--</span><span class="unit">°C</span></p></div>
+          <div class="reading humidity"><p class="reading-label">습도</p><p class="reading-value"><span id="living-humidity">--</span><span class="unit">%</span></p></div>
+        </div>
+        <div class="co2-reading" id="living-co2-reading"><p class="reading-label">이산화탄소 CO₂</p><p class="co2-value"><span id="living-co2">--</span><span class="unit">ppm</span></p></div>
+        <p class="section-label">장면</p>
+        <div class="actions">
+          <button class="action on focusable" id="living-on" type="button" aria-label="방 1 켜기" disabled><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v9M6.35 5.65a8 8 0 1 0 11.3 0"/></svg><span class="action-label" id="living-on-label">켜기</span></button>
+          <button class="action focusable" id="living-off" type="button" aria-label="방 1 끄기" disabled><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v4M6.35 5.65a8 8 0 1 0 11.3 0M3 3l18 18"/></svg><span class="action-label" id="living-off-label">끄기</span></button>
+        </div>
+        <div class="history" id="living-history"><div class="card-heading"><div class="card-title"><button class="feature-button focusable" id="living-history-humidity" type="button" aria-pressed="true">습도 기록</button><button class="feature-button focusable" id="living-history-co2" type="button" aria-pressed="false" style="display:none">CO₂ 기록</button></div><p class="history-summary card-helper" id="living-history-summary">기록을 기다리고 있어요.</p></div><svg class="history-graph" viewBox="0 0 480 110" role="img" aria-label="최근 24시간 환경 기록"><path class="history-grid" d="M0 90H480M0 45H480"/><path class="history-path" id="living-history-path" d=""/></svg></div>
+      </article>
+      <article class="room">
+        <div class="room-heading"><span class="room-symbol" aria-hidden="true">☾</span><h2 id="bedroom-name">방 2</h2></div>
+        <div class="readings bedroom-readings" id="bedroom-readings">
+          <div class="reading"><p class="reading-label">온도</p><p class="reading-value"><span id="bedroom-temperature">--</span><span class="unit">°C</span></p></div>
+          <div class="reading humidity"><p class="reading-label">습도</p><p class="reading-value"><span id="bedroom-humidity">--</span><span class="unit">%</span></p></div>
+          <div class="reading co2-reading" id="bedroom-co2-reading"><p class="reading-label">CO₂</p><p class="reading-value co2-value"><span id="bedroom-co2">--</span><span class="unit">ppm</span></p></div>
+        </div>
+        <p class="section-label">장면</p>
+        <div class="actions">
+          <button class="action on focusable" id="bedroom-on" type="button" aria-label="방 2 켜기" disabled><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v9M6.35 5.65a8 8 0 1 0 11.3 0"/></svg><span class="action-label" id="bedroom-on-label">켜기</span></button>
+          <button class="action focusable" id="bedroom-off" type="button" aria-label="방 2 끄기" disabled><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v4M6.35 5.65a8 8 0 1 0 11.3 0M3 3l18 18"/></svg><span class="action-label" id="bedroom-off-label">끄기</span></button>
+        </div>
+        <div class="history" id="bedroom-history"><div class="card-heading"><div class="card-title"><button class="feature-button focusable" id="bedroom-history-humidity" type="button" aria-pressed="true">습도 기록</button><button class="feature-button focusable" id="bedroom-history-co2" type="button" aria-pressed="false" style="display:none">CO₂ 기록</button></div><p class="history-summary card-helper" id="bedroom-history-summary">기록을 기다리고 있어요.</p></div><svg class="history-graph" viewBox="0 0 480 110" role="img" aria-label="최근 24시간 환경 기록"><path class="history-grid" d="M0 90H480M0 45H480"/><path class="history-path" id="bedroom-history-path" d=""/></svg></div>
+      </article>
+    </section>
+    <section class="feature-card" id="weekly-section" aria-label="최근 7일 환경">
+      <div class="card-heading"><div class="card-title"><h2>최근 7일 환경</h2><button class="feature-button focusable" id="weekly-toggle" type="button" aria-expanded="false" aria-controls="weekly-details">요약 보기</button></div><p class="feature-note card-helper" id="weekly-summary">집계할 기록을 기다리고 있어요.</p></div>
+      <div id="weekly-details" style="display:none">
+        <article class="weekly-room focusable" id="weekly-living" tabindex="0" style="display:none"><h3 id="weekly-living-name">방 1</h3><p class="weekly-metric" id="weekly-living-temperature"></p><p class="weekly-metric" id="weekly-living-humidity"></p><p class="weekly-metric" id="weekly-living-co2"></p></article>
+        <article class="weekly-room focusable" id="weekly-bedroom" tabindex="0" style="display:none"><h3 id="weekly-bedroom-name">방 2</h3><p class="weekly-metric" id="weekly-bedroom-temperature"></p><p class="weekly-metric" id="weekly-bedroom-humidity"></p><p class="weekly-metric" id="weekly-bedroom-co2"></p></article>
+        <p class="feature-note">평균은 기록이 유지된 시간으로 계산해요. 각 값은 최대 1시간까지만 반영하며, 기록이 없는 시간은 제외합니다. 높은 시간대만으로 환기 여부를 판단하지 않습니다.</p>
+      </div>
+    </section>
+    <section class="washers" id="washers" aria-label="세탁기 상태"></section>
+    <section class="feature-card" aria-label="운영 상태"><p class="maintenance-summary"><strong>기가지니</strong><span id="maintenance-status">수신 대기</span></p><p class="feature-note"><span class="maintenance-details" id="maintenance-details">현재 상태 미확인</span><span id="maintenance-seen">마지막 수신 · 아직 없음</span></p><p class="feature-note" id="maintenance-error" style="display:none"></p></section>
+    <section class="feature-card" id="alert-settings-section" aria-label="알림 설정" style="display:none"><button class="feature-button focusable" id="alert-settings-toggle" type="button" aria-expanded="false" aria-controls="alert-settings-editor">알림 설정</button><div id="alert-settings-editor" style="display:none"><p class="feature-note">환기가 필요할 때 참고하는 알림입니다. 항목 버튼을 누르면 다음 설정값으로 바뀝니다.</p><div class="setting-row"><span>환경·연결 알림</span><button class="feature-button focusable" id="alert-setting-enabled" type="button"></button></div><div class="setting-row"><span>CO₂ 알림 기준</span><button class="feature-button focusable" id="alert-setting-co2Threshold" type="button"></button></div><div class="setting-row"><span>기준 초과 지속 시간</span><button class="feature-button focusable" id="alert-setting-co2DurationMinutes" type="button"></button></div><div class="setting-row"><span>CO₂ 알림 확인 후 재알림 간격</span><button class="feature-button focusable" id="alert-setting-co2CooldownMinutes" type="button"></button></div><div class="setting-row"><span>연결 끊김 대기 시간</span><button class="feature-button focusable" id="alert-setting-connectionDelaySeconds" type="button"></button></div><button class="feature-button focusable" id="alert-settings-save" type="button">알림 설정 저장</button><button class="feature-button focusable" id="alert-settings-cancel" type="button">취소</button></div></section>
+    <footer class="footer">
+      <p class="remote-hint">방향키 이동 · 확인 선택 · 뒤로 상단</p>
+      <p class="message" id="message" role="status" aria-live="polite"></p>
+      <p class="note">설정한 Home Assistant 장면을 실행합니다. 실제 기기 상태를 확인하세요.</p>
+    </footer>
+  </main>
+  <div class="standby" id="panel-standby" tabindex="-1" role="dialog" aria-modal="true" aria-label="대기 화면" style="display:none"><time class="standby-time" id="standby-time"></time><p class="standby-date" id="standby-date"></p><p class="standby-hint">리모컨의 방향키나 확인을 누르면 돌아갑니다</p></div>
+  <script src="/washer-alerts.js"></script>
+  <script src="/offline-snapshot.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var state = null;
+      var snapshotCache = null;
+      var maintenanceData = null;
+      var maintenanceReachable = false;
+      var busy = false;
+      var loading = false;
+      var refreshQueued = false;
+      var stateError = true;
+      var pendingId = '';
+      var returnFocus = '';
+      var csrf = '';
+      var reconnecting = false;
+      var enterHeld = false;
+      var sleeping = false;
+      var wakeHeld = 0;
+      var standbyFocus = '';
+      var weeklyOpen = false;
+      var co2NoticeKey = '';
+      var washerViews = [];
+      var washerData = [];
+      var alertTracker = null;
+      var completionAlerts = [];
+      var renderedAlert = '';
+      var controls = [
+        { id: 'living-on', entityId: null, label: '켜기', on: true },
+        { id: 'living-off', entityId: null, label: '끄기', on: false },
+        { id: 'bedroom-on', entityId: null, label: '켜기', on: true },
+        { id: 'bedroom-off', entityId: null, label: '끄기', on: false }
+      ];
+      function element(id) { return document.getElementById(id); }
+      function text(id, value) { element(id).textContent = value; }
+      function pad(value) { return value < 10 ? '0' + value : String(value); }
+      function loadTheme() {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+      function clock() {
+        var now = new Date();
+        text('clock-time', pad(now.getHours()) + ':' + pad(now.getMinutes()));
+        text('clock-date', (now.getMonth() + 1) + '월 ' + now.getDate() + '일 ' + ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][now.getDay()]);
+        text('standby-time', pad(now.getHours()) + ':' + pad(now.getMinutes()));
+        text('standby-date', (now.getMonth() + 1) + '월 ' + now.getDate() + '일 ' + ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][now.getDay()]);
+        drawWasherTiming();
+        drawMaintenance();
+      }
+      function number(value, decimals) {
+        return typeof value === 'number' && isFinite(value) ? value.toFixed(decimals) : '--';
+      }
+      function drawWeather(weather) {
+        var parts = [];
+        var detail = [];
+        var updated;
+        text('weather-location', weather && weather.available === true && typeof weather.name === 'string' && weather.name.trim() ? weather.name.trim().slice(0, 80) : '현재 날씨');
+        if (!weather || weather.available !== true) {
+          text('weather-summary', '날씨 정보 없음'); text('weather-source', ''); return;
+        }
+        if (typeof weather.condition === 'string' && weather.condition) { parts.push(weather.condition); }
+        if (typeof weather.temperatureC === 'number' && isFinite(weather.temperatureC)) {
+          parts.push(weather.temperatureC.toFixed(1).replace(/\.0$/, '') + '°C');
+        }
+        if (!parts.length) { text('weather-summary', '날씨 정보 없음'); text('weather-source', ''); return; }
+        if (typeof weather.source === 'string' && weather.source) { detail.push(weather.source); }
+        updated = weather.updatedAt ? new Date(weather.updatedAt) : null;
+        if (updated && !isNaN(updated.getTime())) { detail.push(pad(updated.getHours()) + ':' + pad(updated.getMinutes()) + ' 갱신'); }
+        text('weather-summary', parts.join(' · ')); text('weather-source', detail.join(' · '));
+      }
+      function drawCompletionAlerts(pending, isNew) {
+        var banner = element('completion-banner');
+        var button = element('completion-confirm');
+        var current = document.activeElement;
+        var first, date, detail, signature;
+        completionAlerts = pending || [];
+        if (!completionAlerts.length) {
+          banner.style.display = 'none'; button.disabled = true; renderedAlert = '';
+          if (current === button) { focusHeader(); }
+          return;
+        }
+        first = completionAlerts[0];
+        signature = first.id + ':' + completionAlerts.length;
+        banner.style.display = 'block'; button.disabled = false;
+        if (signature !== renderedAlert) {
+          date = new Date(first.at);
+          detail = (first.room ? first.room + ' · ' : '') + first.name + ' · ' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ' 완료';
+          if (completionAlerts.length > 1) { detail += ' · 외 ' + (completionAlerts.length - 1) + '건'; }
+          text('completion-detail', detail);
+          renderedAlert = signature;
+        }
+        if (isNew && sleeping) { wakeStandby(); }
+        if (isNew && !busy && !enterHeld && (!current || current.tagName === 'BODY')) { button.focus(); }
+      }
+      function initCompletionAlerts() {
+        var storage = null;
+        if (typeof createWasherAlertTracker !== 'function') { return; }
+        try { storage = window.localStorage; } catch (error) {}
+        alertTracker = createWasherAlertTracker({storage: storage, storageKey: 'home-panel-washer-alerts-v1'});
+        drawCompletionAlerts(alertTracker.getPending(), false);
+      }
+      function observeCompletionAlerts(washers) {
+        var result;
+        if (!alertTracker) { return; }
+        result = alertTracker.observe(Array.isArray(washers) ? washers : [], true);
+        drawCompletionAlerts(result.pending, result.added.length > 0);
+      }
+      function confirmCompletion() {
+        if (!alertTracker || !completionAlerts.length) { return; }
+        returnFocus = '';
+        drawCompletionAlerts(alertTracker.acknowledge(completionAlerts[0].id), false);
+      }
+      function makeNode(tag, className, value) {
+        var node = document.createElement(tag);
+        node.className = className;
+        if (typeof value === 'string') { node.textContent = value; }
+        return node;
+      }
+      function makeWasher(index) {
+        var view = {};
+        var metrics, header, title, notes;
+        function metric(label) {
+          var column = makeNode('p', 'washer-metric');
+          var value = makeNode('span', 'washer-metric-value', '수신 대기');
+          column.appendChild(makeNode('span', 'washer-metric-label', label)); column.appendChild(value); metrics.appendChild(column);
+          return value;
+        }
+        view.card = makeNode('article', 'washer-card focusable');
+        view.card.id = 'washer-' + index;
+        view.card.setAttribute('tabindex', '0');
+        header = makeNode('div', 'washer-heading card-heading');
+        title = makeNode('div', 'card-title'); notes = makeNode('div', 'card-helper');
+        view.name = makeNode('h2', 'washer-title'); view.room = makeNode('span', 'washer-room'); view.status = makeNode('p', 'washer-status');
+        title.appendChild(view.name); title.appendChild(view.status);
+        view.energy = makeNode('p', 'washer-note'); view.notification = makeNode('p', 'washer-note'); view.updated = makeNode('p', 'washer-note');
+        notes.appendChild(view.room); notes.appendChild(view.updated); notes.appendChild(view.energy); notes.appendChild(view.notification);
+        header.appendChild(title); header.appendChild(notes); view.card.appendChild(header);
+        metrics = makeNode('div', 'washer-metrics');
+        view.remaining = metric('남은 시간 · 예상'); view.remote = metric('원격 시작 설정'); view.total = metric('전체 시간');
+        view.card.appendChild(metrics);
+        element('washers').appendChild(view.card);
+        return view;
+      }
+      function remainingTime(washer) {
+        var active = /^(cool_down|drying|running|spinning|steam_softening|refreshing|rinsing|detecting)$/.test(washer.state);
+        var end = typeof washer.remainingEndAt === 'string' ? new Date(washer.remainingEndAt).getTime() : NaN;
+        var difference = end - new Date().getTime();
+        var minutes;
+        if (stateError || washer.available !== true) { return '수신 대기'; }
+        if (/^(pause|paused)$/.test(washer.state)) { return '일시정지'; }
+        if (/^(power_off|power_on|initial|initializing|standby|end|complete|completed|done|running_end|idle|sleep)$/.test(washer.state)) { return '—'; }
+        if (!active || !isFinite(end) || difference <= 0) { return '수신 대기'; }
+        minutes = Math.ceil(difference / 60000);
+        return minutes >= 60 ? Math.floor(minutes / 60) + '시간 ' + (minutes % 60) + '분' : minutes + '분';
+      }
+      function drawWasherTiming() {
+        var i;
+        for (i = 0; i < washerViews.length; i += 1) { washerViews[i].remaining.textContent = remainingTime(washerData[i]); }
+      }
+      function drawWashers(washers) {
+        var list = Array.isArray(washers) ? washers : [];
+        var i, washer, view, notification, date, updated;
+        washerData = list;
+        while (washerViews.length > list.length) { view = washerViews.pop(); element('washers').removeChild(view.card); }
+        element('washers').style.display = list.length ? 'block' : 'none';
+        for (i = 0; i < list.length; i += 1) {
+          washer = list[i];
+          if (!washerViews[i]) { washerViews.push(makeWasher(i)); }
+          view = washerViews[i];
+          view.name.textContent = typeof washer.name === 'string' && washer.name ? washer.name : '세탁기';
+          view.room.textContent = (typeof washer.room === 'string' && washer.room ? washer.room + ' · ' : '') + 'LG ThinQ · 상태 확인';
+          view.status.textContent = washer.available === true && typeof washer.statusLabel === 'string' ? washer.statusLabel : '연결 확인 필요';
+          view.remote.textContent = washer.available !== true || typeof washer.remoteStart !== 'boolean' ? '수신 대기' : washer.remoteStart ? '준비됨' : '꺼짐';
+          view.total.textContent = washer.available === true && typeof washer.totalMinutes === 'number' && isFinite(washer.totalMinutes) && washer.totalMinutes >= 0 ? washer.totalMinutes + '분' : '수신 대기';
+          view.energy.textContent = washer.available === true && typeof washer.energyMonthKwh === 'number' && isFinite(washer.energyMonthKwh) && washer.energyMonthKwh >= 0 ? '이번 달 사용량 · ' + washer.energyMonthKwh + ' kWh' : '';
+          updated = typeof washer.updatedAt === 'string' ? new Date(washer.updatedAt) : null;
+          view.updated.textContent = updated && !isNaN(updated.getTime()) ? '마지막 수신 · ' + (updated.getMonth() + 1) + '/' + updated.getDate() + ' ' + pad(updated.getHours()) + ':' + pad(updated.getMinutes()) : '';
+          notification = washer.lastNotification;
+          date = notification && typeof notification.at === 'string' ? new Date(notification.at) : null;
+          view.notification.textContent = notification && typeof notification.label === 'string' && date && !isNaN(date.getTime()) ? '지난 알림 · ' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ' · ' + notification.label : '';
+        }
+        drawWasherTiming();
+      }
+      function sceneFor(entityId) {
+        var scenes = state && state.scenes ? state.scenes : [];
+        var i;
+        for (i = 0; i < scenes.length; i += 1) {
+          if (scenes[i].entityId === entityId) { return scenes[i]; }
+        }
+        return null;
+      }
+      function ready() { return !!(state && state.mode === 'live' && state.connected === true && !stateError && csrf); }
+      function drawControls() {
+        var i, item, button, scene;
+        for (i = 0; i < controls.length; i += 1) {
+          item = controls[i]; button = element(item.id); scene = sceneFor(item.entityId);
+          button.disabled = busy || !ready() || !scene || scene.available !== true;
+          button.className = 'action focusable' + (item.on ? ' on' : '') + (pendingId === item.id ? ' pending' : '');
+          text(item.id + '-label', pendingId === item.id ? '보내는 중…' : item.label);
+        }
+        element('refresh').disabled = false;
+        element('refresh').setAttribute('aria-busy', loading || refreshQueued ? 'true' : 'false');
+        text('refresh', refreshQueued ? '새로고침 대기' : loading ? '새로고침 중…' : '새로고침');
+        ensureFocus();
+      }
+      function status(message, kind) {
+        text('status', message);
+        element('connection').className = 'connection' + (kind ? ' ' + kind : '');
+      }
+      function message(value, isError) {
+        text('message', value);
+        element('message').className = 'message' + (isError ? ' error' : '');
+      }
+      function drawReadings() {
+        var rooms = state && state.rooms ? state.rooms : [];
+        var prefixes = ['living', 'bedroom'];
+        var names = ['living', 'bedroom'];
+        var i, j, room, date;
+        for (i = 0; i < names.length; i += 1) {
+          room = null;
+          for (j = 0; j < rooms.length; j += 1) {
+            if (rooms[j].id === names[i]) { room = rooms[j]; break; }
+          }
+          if (room) text(prefixes[i] + '-name', room.name);
+          text(prefixes[i] + '-temperature', number(room && room.temperature, 1));
+          text(prefixes[i] + '-humidity', number(room && room.humidity, 0));
+          element(prefixes[i] + '-co2-reading').style.display = room && room.hasCo2 === true ? 'block' : 'none';
+          if (prefixes[i] === 'bedroom') { element('bedroom-readings').className = 'readings bedroom-readings' + (room && room.hasCo2 === true ? ' has-co2' : ''); }
+          text(prefixes[i] + '-co2', number(room && room.co2, 0));
+        }
+        date = state && state.updatedAt ? new Date(state.updatedAt) : null;
+        text('updated', date && !isNaN(date.getTime()) ? (state.mode === 'cached' ? '마지막 수신 · ' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' : '') + pad(date.getHours()) + ':' + pad(date.getMinutes()) + (state.mode === 'cached' ? ' · 저장된 값' : ' 확인') : '');
+      }
+      function initSnapshot() {
+        var storage = null;
+        if (typeof createPanelSnapshotCache !== 'function') return;
+        try { storage = window.localStorage; } catch (error) {}
+        snapshotCache = createPanelSnapshotCache({storage: storage});
+        showSnapshot('연결 중이에요.');
+      }
+      function showSnapshot(reason) {
+        var saved = snapshotCache ? snapshotCache.load() : null;
+        state = saved;
+        drawReadings();
+        status(saved ? reason + ' 마지막 수신 값을 표시해요. 기기 조작은 연결 후 사용할 수 있어요.' : reason, 'error');
+      }
+      var favoriteEditor = false;
+      var favoriteDraft = [];
+      var settingsEditor = false;
+      var settingsDraft = null;
+      var historyMetrics = { living: 'humidity', bedroom: 'humidity' };
+      var featureData = null;
+      function boundedArray(value, limit) { return Array.isArray(value) ? value.slice(0, limit) : []; }
+      function finite(value) { return typeof value === 'number' && isFinite(value); }
+      function formatHour(value) {
+        var date = new Date(value), shifted;
+        if (isNaN(date.getTime())) { return '--'; }
+        shifted = new Date(date.getTime() + 9 * 3600000);
+        return pad(shifted.getUTCHours()) + '시';
+      }
+      function featureItem(id) {
+        var list = featureData && featureData.favorites ? boundedArray(featureData.favorites.items, 16) : [], i;
+        for (i = 0; i < list.length; i += 1) { if (list[i].id === id) { return list[i]; } }
+        return null;
+      }
+      function drawForecast(value) {
+        var list = value && value.available === true ? boundedArray(value.items, 8) : [], i, item, rain;
+        for (i = 0; i < 8; i += 1) {
+          item = list[i]; element('forecast-item-' + i).style.display = item ? 'block' : 'none';
+          if (!item) { continue; }
+          text('forecast-time-' + i, formatHour(item.time));
+          text('forecast-condition-' + i, item.condition || '예보 없음');
+          text('forecast-temp-' + i, finite(item.temperatureC) ? item.temperatureC.toFixed(1).replace(/\.0$/, '') + '°C' : '--');
+          rain = finite(item.precipitationMm) ? item.precipitationMm + ' mm' : '강수량 --';
+          rain += ' · ' + (finite(item.precipitationProbability) ? item.precipitationProbability + '%' : '확률 --');
+          text('forecast-rain-' + i, rain);
+        }
+        text('forecast-note', list.length ? (value.source || '날씨 제공기관') + ' · 시간별 예보' : '시간별 예보를 불러오지 못했어요. 연결되면 다시 표시합니다.');
+      }
+      function roomByName(name) {
+        var list = featureData ? boundedArray(featureData.rooms, 10) : [], i;
+        for (i = 0; i < list.length; i += 1) { if (list[i].id === name) { return list[i]; } }
+        return null;
+      }
+      function drawHistory(prefix, name) {
+        var room = roomByName(name), metric = historyMetrics[prefix], series, values = [], points = [], i, p, time, value;
+        var end = new Date().getTime(), start = end - 86400000, low, high, range, path = '', connected = false, count = 0;
+        if (metric === 'co2' && (!room || !room.hasCo2)) { metric = 'humidity'; historyMetrics[prefix] = metric; }
+        element(prefix + '-history-co2').style.display = room && room.hasCo2 ? 'inline-block' : 'none';
+        element(prefix + '-history-co2').disabled = !room || !room.hasCo2;
+        element(prefix + '-history-humidity').setAttribute('aria-pressed', String(metric === 'humidity'));
+        element(prefix + '-history-co2').setAttribute('aria-pressed', String(metric === 'co2'));
+        series = room && room.histories ? boundedArray(room.histories[metric], 288) : [];
+        for (i = 0; i < series.length; i += 1) {
+          p = series[i]; time = p ? new Date(p.time).getTime() : NaN;
+          if (!isFinite(time) || time < start || time > end) { continue; }
+          value = p.value;
+          if (!finite(value) || value < 0 || (metric === 'humidity' && value > 100)) { value = null; }
+          points.push({ time: time, value: value }); if (value !== null) { values.push(value); }
+        }
+        points.sort(function (a, b) { return a.time - b.time; });
+        if (values.length) {
+          low = Math.min.apply(null, values); high = Math.max.apply(null, values); range = Math.max(high - low, metric === 'co2' ? 20 : 1);
+          for (i = 0; i < points.length; i += 1) {
+            p = points[i]; if (p.value === null) { connected = false; continue; }
+            path += (connected ? 'L' : 'M') + ((p.time - start) / 86400000 * 480).toFixed(2) + ' ' + (90 - (p.value - low) / range * 70).toFixed(2) + ' ';
+            connected = true; count += 1;
+          }
+        }
+        element(prefix + '-history-path').setAttribute('d', path);
+        text(prefix + '-history-summary', count > 1 ? '최근 24시간 · 최소 ' + low.toFixed(metric === 'co2' ? 0 : 1) + ' / 최대 ' + high.toFixed(metric === 'co2' ? 0 : 1) + (metric === 'co2' ? ' ppm' : '%') : '기록이 쌓이면 최근 24시간 추이를 표시합니다.');
+      }
+      function drawNotifications(value) {
+        var list = boundedArray(value, 20), i, item;
+        var nextCo2Key = list.filter(function (entry) { return entry.kind === 'co2'; }).map(function (entry) { return entry.id; }).join(',');
+        if (sleeping && nextCo2Key && nextCo2Key !== co2NoticeKey) { wakeStandby(); }
+        co2NoticeKey = nextCo2Key;
+        element('panel-notifications').style.display = list.length ? 'block' : 'none';
+        for (i = 0; i < 8; i += 1) {
+          item = list[i]; element('notification-row-' + i).style.display = item ? 'block' : 'none';
+          element('notification-dismiss-' + i).disabled = !item || busy || !csrf;
+          if (item) { text('notification-title-' + i, item.title || '알림'); text('notification-message-' + i, item.message || ''); }
+        }
+        text('notification-more', list.length > 8 ? '외 ' + (list.length - 8) + '개 · 위 알림을 확인하면 이어서 표시합니다.' : '');
+      }
+      function drawFavoriteEditor() {
+        var list = featureData && featureData.favorites ? boundedArray(featureData.favorites.items, 16) : [], i, item, position;
+        element('favorites-editor').style.display = favoriteEditor ? 'block' : 'none';
+        element('favorites-edit').setAttribute('aria-expanded', String(favoriteEditor));
+        for (i = 0; i < 16; i += 1) {
+          item = list[i]; element('favorite-edit-row-' + i).style.display = item ? 'block' : 'none';
+          position = item ? favoriteDraft.indexOf(item.id) : -1;
+          element('favorite-choice-' + i).disabled = !item || busy;
+          element('favorite-up-' + i).disabled = busy || position <= 0;
+          element('favorite-down-' + i).disabled = busy || position < 0 || position >= favoriteDraft.length - 1;
+          if (item) {
+            text('favorite-choice-' + i, (position < 0 ? '추가 · ' : (position + 1) + ' · ') + item.label);
+            element('favorite-choice-' + i).setAttribute('aria-pressed', String(position >= 0));
+          }
+        }
+        element('favorites-save').disabled = busy || !csrf;
+        element('favorites-cancel').disabled = busy;
+      }
+      function drawFavorites(value) {
+        var items = value ? boundedArray(value.items, 16) : [], selected = value ? boundedArray(value.selected, 8) : [], i, item;
+        element('favorites-section').style.display = items.length ? 'block' : 'none';
+        element('favorites-edit').disabled = busy || !csrf;
+        for (i = 0; i < 8; i += 1) {
+          item = featureItem(selected[i]); element('favorite-' + i).style.display = item ? 'inline-block' : 'none';
+          element('favorite-' + i).disabled = !item || busy || !csrf || item.available !== true;
+          if (item) { text('favorite-' + i, item.label); }
+        }
+        if (!favoriteEditor) { favoriteDraft = selected.slice(); }
+        drawFavoriteEditor();
+      }
+      function drawSettings() {
+        var settings = featureData && featureData.alertSettings, keys = ['enabled', 'co2Threshold', 'co2DurationMinutes', 'co2CooldownMinutes', 'connectionDelaySeconds'], i, key, label;
+        element('alert-settings-section').style.display = settings ? 'block' : 'none';
+        element('alert-settings-editor').style.display = settingsEditor ? 'block' : 'none';
+        element('alert-settings-toggle').setAttribute('aria-expanded', String(settingsEditor));
+        element('alert-settings-toggle').disabled = busy || !settings || !csrf;
+        if (!settingsEditor && settings) { settingsDraft = JSON.parse(JSON.stringify(settings)); }
+        for (i = 0; i < keys.length; i += 1) {
+          key = keys[i]; label = settingsDraft ? settingsDraft[key] : null;
+          if (key === 'enabled') { label = label ? '켜짐' : '꺼짐'; }
+          else { label = label === null ? '--' : String(label) + (key === 'co2Threshold' ? ' ppm' : key === 'connectionDelaySeconds' ? '초' : '분'); }
+          text('alert-setting-' + key, label);
+          element('alert-setting-' + key).disabled = busy || !settingsDraft;
+        }
+        element('alert-settings-save').disabled = busy || !settingsDraft || !csrf;
+        element('alert-settings-cancel').disabled = busy;
+      }
+      function enterStandby() {
+        if (completionAlerts.length || co2NoticeKey || busy) { return false; }
+        if (sleeping) { return true; }
+        standbyFocus = returnFocus || (document.activeElement && document.activeElement.id ? document.activeElement.id : 'refresh');
+        returnFocus = ''; sleeping = true;
+        element('panel-standby').style.display = 'block'; element('panel-standby').focus();
+        return true;
+      }
+      function wakeStandby() {
+        if (!sleeping) { return; }
+        sleeping = false; element('panel-standby').style.display = 'none';
+        var target = element(standbyFocus);
+        if (target && !target.disabled) { target.focus(); } else { focusHeader(); }
+      }
+      function requestPanelBack() {
+        returnFocus = '';
+        if (sleeping) { wakeStandby(); }
+        else if (completionAlerts.length) { element('completion-confirm').focus(); }
+        else if (favoriteEditor) { favoriteEditor = false; drawFavorites(featureData && featureData.favorites); element('favorites-edit').focus(); }
+        else if (weeklyOpen) { weeklyOpen = false; drawWeekly(featureData && featureData.weekly); element('weekly-toggle').focus(); }
+        else if (settingsEditor) { settingsEditor = false; drawSettings(); element('alert-settings-toggle').focus(); }
+        else { return false; }
+        return true;
+      }
+      window.requestHomePanelStandby = enterStandby;
+      window.requestHomePanelBack = requestPanelBack;
+      function drawWeekly(value) {
+        var rooms = value && Array.isArray(value.rooms) ? value.rooms : [], prefixes = ['living', 'bedroom'], names = ['living', 'bedroom'];
+        var kinds = ['temperature', 'humidity', 'co2'], labels = ['온도', '습도', 'CO₂'], units = ['°C', '%', 'ppm'];
+        var i, j, room, metric, detail, peaks, available = !stateError && value && value.available === true;
+        element('weekly-details').style.display = weeklyOpen ? 'block' : 'none';
+        element('weekly-toggle').setAttribute('aria-expanded', String(weeklyOpen)); text('weekly-toggle', weeklyOpen ? '요약 접기' : '요약 보기');
+        text('weekly-summary', stateError ? '연결이 복구되면 주간 기록을 다시 확인합니다.' : available ? '실제로 기록된 구간의 온도·습도·CO₂를 요약합니다.' : '집계할 기록을 기다리고 있어요.');
+        for (i = 0; i < prefixes.length; i += 1) {
+          room = null;
+          for (j = 0; j < rooms.length; j += 1) { if (rooms[j].id === names[i]) { room = rooms[j]; break; } }
+          if (room) text('weekly-' + prefixes[i] + '-name', room.name);
+          element('weekly-' + prefixes[i]).style.display = available && room ? 'block' : 'none';
+          for (j = 0; j < kinds.length; j += 1) {
+            metric = room && room.metrics ? room.metrics[kinds[j]] : null;
+            if (!metric || metric.available !== true || metric.unit !== units[j] || typeof metric.average !== 'number' || !isFinite(metric.average) || !(metric.coverageHours > 0)) { text('weekly-' + prefixes[i] + '-' + kinds[j], labels[j] + ' · 집계할 기록 없음'); continue; }
+            detail = labels[j] + ' 평균 ' + number(metric.average, j === 2 ? 0 : 1) + ' ' + units[j] + ' · 최저 ' + number(metric.min, j === 2 ? 0 : 1) + ' / 최고 ' + number(metric.max, j === 2 ? 0 : 1);
+            detail += '\n기록 확인 ' + number(metric.availableDays, 0) + '/7일 · ' + number(metric.coverageHours, 1) + '시간 (' + number(metric.coveragePercent, 1) + '%)';
+            if (j === 2) {
+              detail += '\n' + number(value.co2Threshold, 0) + ' ppm 이상 ' + number(metric.aboveThresholdHours, 1) + '시간 · 집계 시간의 ' + number(metric.aboveThresholdPercent, 1) + '%';
+              peaks = Array.isArray(metric.peakHours) ? metric.peakHours.filter(function (peak) { return typeof peak.hour === 'number' && peak.hour >= 0 && peak.hour < 24 && Math.floor(peak.hour) === peak.hour && peak.coverageHours >= 0.5; }).slice(0, 3) : [];
+              if (peaks.length) { detail += '\n평균이 높은 시간대 · ' + peaks.map(function (peak) { return pad(peak.hour) + '시'; }).join(', ') + ' (한국 시간)'; }
+            }
+            text('weekly-' + prefixes[i] + '-' + kinds[j], detail);
+          }
+        }
+      }
+      function drawMaintenance() {
+        var value = maintenanceData, now = new Date().getTime();
+        var seen = value && value.lastSeen ? new Date(value.lastSeen) : null;
+        var known = value && value.available === true && seen && !isNaN(seen.getTime());
+        var online = known && maintenanceReachable && value.online === true && now >= seen.getTime() && now - seen.getTime() < 120000;
+        var states = {idle: '대기 중', checking: '상태 확인 중', downloading: '업데이트 받는 중', accepted: '설치 결과 확인 중', installed: '업데이트 완료', error: '확인 필요'};
+        var errors = {download: '업데이트 파일 수신·검증 확인 필요', installation: '앱 설치 확인 필요', home: '기본 홈 설정 확인 필요', root: '관리 연결 확인 필요', unknown: '관리 상태 확인 필요'};
+        var build = known && typeof value.versionCode === 'number' ? ' · ' + (value.versionName ? 'v' + value.versionName + ' · ' : '') + '빌드 ' + value.versionCode : '';
+        var errorAt = value && value.lastError ? new Date(value.lastError.at) : null;
+        text('maintenance-status', (online ? '연결됨' : known ? '연결 확인 필요' : '수신 대기') + build);
+        text('maintenance-details', online ? (states[value.state] || '미확인') + ' · 기본 홈 ' + (value.home === 'panel' ? '홈 패널' : value.home === 'other' ? '다른 홈' : '미확인') + ' · 관리 연결 ' + (value.root === 'ok' ? '정상' : value.root === 'unavailable' ? '확인 필요' : '미확인') : '현재 상태 미확인');
+        text('maintenance-seen', '마지막 수신 · ' + (known ? (seen.getMonth() + 1) + '/' + seen.getDate() + ' ' + pad(seen.getHours()) + ':' + pad(seen.getMinutes()) + (online ? '' : ' · 이전 기록') : '아직 없음'));
+        element('maintenance-error').style.display = errorAt && !isNaN(errorAt.getTime()) ? 'block' : 'none';
+        if (errorAt && !isNaN(errorAt.getTime())) text('maintenance-error', '최근 확인한 오류 · ' + (errors[value.lastError.code] || errors.unknown) + ' · ' + (errorAt.getMonth() + 1) + '/' + errorAt.getDate() + ' ' + pad(errorAt.getHours()) + ':' + pad(errorAt.getMinutes()));
+      }
+      function configureRooms(value) {
+        var rooms = value && Array.isArray(value.roomConfig) ? value.roomConfig : [], i, j, room, action;
+        for (i = 0; i < controls.length; i += 1) {
+          controls[i].entityId = null;
+          for (j = 0; j < rooms.length; j += 1) {
+            room = rooms[j];
+            if (!room || controls[i].id.split('-')[0] !== room.id) continue;
+            action = controls[i].on ? 'on' : 'off';
+            if (room.scenes && typeof room.scenes[action] === 'string' && /^scene\.[a-z0-9_]{1,120}$/.test(room.scenes[action])) controls[i].entityId = room.scenes[action];
+            if (typeof room.name === 'string' && room.name.length <= 40) {
+              text(room.id + '-name', room.name);
+              element(controls[i].id).setAttribute('aria-label', room.name + ' ' + controls[i].label);
+            }
+          }
+        }
+      }
+      function drawFeatures(value) {
+        featureData = value;
+        configureRooms(value);
+        maintenanceReachable = !!(value && value.maintenance);
+        if (maintenanceReachable) maintenanceData = value.maintenance;
+        drawMaintenance();
+        drawWeekly(value && value.weekly);
+        drawForecast(value && value.forecast);
+        drawNotifications(value && value.notifications);
+        drawFavorites(value && value.favorites);
+        drawSettings();
+        drawHistory('living', 'living'); drawHistory('bedroom', 'bedroom');
+      }
+      function postFeature(path, payload, focusId, completed) {
+        if (busy || !csrf) { return; }
+        busy = true; returnFocus = focusId; message('', false); drawFeatures(featureData); drawControls();
+        request('POST', path, payload, function (error, result, statusCode) {
+          busy = false;
+          if (error) { message(error, true); csrf = ''; stateError = true; }
+          else { message(path === '/api/favorites/run' ? '실행 요청을 보냈어요. 기기의 반응을 확인해 주세요.' : '저장했어요.', false); if (completed) { completed(); } }
+          drawFeatures(featureData); drawControls();
+          if (statusCode !== 401) { refresh(); } else { returnFocus = ''; focusHeader(); }
+        });
+      }
+      function bindFavorite(index) {
+        element('favorite-' + index).addEventListener('click', function () {
+          var selected = featureData && featureData.favorites ? boundedArray(featureData.favorites.selected, 8) : [], item = featureItem(selected[index]);
+          if (item && item.available === true) { postFeature('/api/favorites/run', {id: item.id}, 'favorite-' + index); }
+        });
+        element('notification-dismiss-' + index).addEventListener('click', function () {
+          var list = featureData ? boundedArray(featureData.notifications, 20) : [], item = list[index];
+          if (item) { postFeature('/api/notifications/dismiss', {id: item.id}, 'alert-settings-toggle'); }
+        });
+      }
+      function bindFavoriteChoice(index) {
+        function item() { return featureData && featureData.favorites ? boundedArray(featureData.favorites.items, 16)[index] : null; }
+        element('favorite-choice-' + index).addEventListener('click', function () {
+          var selected = item(), position;
+          if (!selected || busy) { return; }
+          position = favoriteDraft.indexOf(selected.id);
+          if (position >= 0) { favoriteDraft.splice(position, 1); }
+          else if (favoriteDraft.length < 8) { favoriteDraft.push(selected.id); }
+          else { text('favorites-edit-note', '즐겨찾기는 최대 8개입니다. 하나를 해제한 뒤 추가해 주세요.'); }
+          drawFavoriteEditor();
+        });
+        function move(delta) {
+          var selected = item(), position, swap;
+          if (!selected || busy) { return; }
+          position = favoriteDraft.indexOf(selected.id);
+          if (position < 0 || position + delta < 0 || position + delta >= favoriteDraft.length) { return; }
+          swap = favoriteDraft[position + delta]; favoriteDraft[position + delta] = selected.id; favoriteDraft[position] = swap;
+          drawFavoriteEditor();
+          element('favorite-choice-' + index).focus();
+        }
+        element('favorite-up-' + index).addEventListener('click', function () { move(-1); });
+        element('favorite-down-' + index).addEventListener('click', function () { move(1); });
+      }
+      function bindHistory(prefix, name) {
+        element(prefix + '-history-humidity').addEventListener('click', function () { historyMetrics[prefix] = 'humidity'; drawHistory(prefix, name); });
+        element(prefix + '-history-co2').addEventListener('click', function () { historyMetrics[prefix] = 'co2'; drawHistory(prefix, name); });
+      }
+      function bindSetting(key, values) {
+        element('alert-setting-' + key).addEventListener('click', function () {
+          var position;
+          if (!settingsDraft || busy) { return; }
+          if (key === 'enabled') { settingsDraft.enabled = !settingsDraft.enabled; }
+          else { position = values.indexOf(settingsDraft[key]); settingsDraft[key] = values[(position + 1) % values.length]; }
+          drawSettings();
+        });
+      }
+      function initFeatures() {
+        var index;
+        for (index = 0; index < 8; index += 1) { bindFavorite(index); }
+        for (index = 0; index < 16; index += 1) { bindFavoriteChoice(index); }
+        bindHistory('living', 'living'); bindHistory('bedroom', 'bedroom');
+        bindSetting('enabled', []); bindSetting('co2Threshold', [800, 1000, 1200, 1500, 2000, 2500, 3000]);
+        bindSetting('co2DurationMinutes', [1, 3, 5, 10, 15, 30]); bindSetting('co2CooldownMinutes', [15, 30, 60, 120, 240]); bindSetting('connectionDelaySeconds', [30, 60, 120, 180, 300]);
+        element('favorites-edit').addEventListener('click', function () { favoriteEditor = !favoriteEditor; drawFavoriteEditor(); });
+        element('favorites-cancel').addEventListener('click', function () { favoriteEditor = false; drawFavorites(featureData && featureData.favorites); element('favorites-edit').focus(); });
+        element('favorites-save').addEventListener('click', function () { postFeature('/api/favorites/settings', {selected: favoriteDraft.slice()}, 'favorites-edit', function () { favoriteEditor = false; }); });
+        element('alert-settings-toggle').addEventListener('click', function () { settingsEditor = !settingsEditor; drawSettings(); });
+        element('alert-settings-cancel').addEventListener('click', function () { settingsEditor = false; drawSettings(); element('alert-settings-toggle').focus(); });
+        element('alert-settings-save').addEventListener('click', function () { postFeature('/api/alert-settings', {settings: settingsDraft}, 'alert-settings-toggle', function () { settingsEditor = false; }); });
+        drawFeatures(null);
+      }
+      function request(method, path, payload, done) {
+        var xhr = new XMLHttpRequest();
+        var finished = false;
+        function finish(error, result, statusCode) {
+          if (finished) { return; }
+          finished = true;
+          done(error, result, statusCode);
+        }
+        xhr.open(method, path, true);
+        xhr.timeout = 10000;
+        if (method === 'POST') {
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.setRequestHeader('X-CSRF-Token', csrf);
+        }
+        xhr.onreadystatechange = function () {
+          var result;
+          if (xhr.readyState !== 4 || xhr.status === 0) { return; }
+          if (xhr.status === 401) {
+            refreshQueued = false;
+            finish('연결을 다시 열어 주세요.', null, 401);
+            if (!reconnecting && window.navigator && /(?:^|\s)HomePanelKiosk\/1\.0(?:\s|$)/.test(window.navigator.userAgent || '')) {
+              reconnecting = true;
+              window.location.replace('/device/reconnect');
+            }
+            return;
+          }
+          try { result = JSON.parse(xhr.responseText); }
+          catch (error) { finish('정보를 불러오지 못했어요. 잠시 후 다시 확인해 주세요.', null, xhr.status); return; }
+          if (xhr.status < 200 || xhr.status >= 300 || !result || result.ok === false) {
+            finish(result && typeof result.error === 'string' ? result.error : '요청을 완료하지 못했어요. 연결을 확인해 주세요.', null, xhr.status);
+            return;
+          }
+          finish(null, result, xhr.status);
+        };
+        xhr.onerror = function () { finish('연결을 확인해 주세요. 잠시 후 다시 불러올게요.', null, 0); };
+        xhr.ontimeout = function () { finish(method === 'POST' ? '실행 결과를 확인하지 못했어요. 에어컨의 반응을 확인해 주세요.' : '연결이 지연되고 있어요. 잠시 후 다시 불러올게요.', null, 0); };
+        try { xhr.send(payload ? JSON.stringify(payload) : null); }
+        catch (error) { finish('연결을 확인해 주세요.', null, 0); }
+      }
+      function refresh(manual) {
+        if (manual === true) { returnFocus = 'refresh'; refreshQueued = true; }
+        if (loading || busy) { if (manual === true) { drawControls(); } return; }
+        refreshQueued = false;
+        loading = true;
+        drawControls();
+        request('GET', '/api/state', null, function (error, result) {
+          loading = false;
+          if (error) {
+            csrf = '';
+            stateError = true;
+            showSnapshot(error);
+          } else if (!Array.isArray(result.rooms) || !Array.isArray(result.scenes)) {
+            csrf = '';
+            stateError = true;
+            showSnapshot('우리 집 정보를 확인하지 못했어요.');
+          } else {
+            state = result;
+            csrf = typeof result.csrfToken === 'string' ? result.csrfToken : '';
+            stateError = !!result.error || result.mode !== 'live' || result.connected !== true || result.serverReachable === false || !csrf;
+            if (stateError) {
+              showSnapshot(typeof result.error === 'string' && result.error ? result.error : '우리 집 연결을 확인해 주세요.');
+            } else {
+              if (snapshotCache) snapshotCache.save(result);
+              drawReadings();
+              status('우리 집과 연결되어 있어요.', 'connected');
+            }
+          }
+          if (!stateError) { observeCompletionAlerts(result.washers); }
+          drawFeatures(error ? null : result);
+          drawWeather(stateError ? null : result.weather);
+          drawWashers(stateError ? [] : result.washers);
+          drawControls();
+          if (!busy) { restoreFocus(); if (refreshQueued) { refresh(); } }
+        });
+      }
+      function run(item) {
+        var scene = sceneFor(item.entityId);
+        if (busy || !ready() || !scene || scene.available !== true) { return; }
+        busy = true;
+        pendingId = item.id;
+        returnFocus = item.id;
+        message('', false);
+        drawControls();
+        request('POST', '/api/scenes/run', { entityId: item.entityId }, function (error, result, statusCode) {
+          busy = false;
+          pendingId = '';
+          if (error) {
+            stateError = true;
+            csrf = '';
+            message(error, true);
+            if (statusCode === 401) { status('연결을 다시 열어 주세요.', 'error'); }
+          } else { message('실행 요청을 보냈어요. 에어컨의 반응을 확인해 주세요.', false); }
+          drawControls();
+          if (statusCode !== 401) { refresh(); }
+          else { returnFocus = ''; focusHeader(); }
+        });
+      }
+      function focusHeader() { var button = element('refresh'); button.focus(); if (button.scrollIntoView) { button.scrollIntoView(false); } }
+      function focusable(target) {
+        return !!(target && !target.disabled && (target.tagName === 'BUTTON' || ((' ' + target.className + ' ').indexOf(' washer-card ') !== -1 || (' ' + target.className + ' ').indexOf(' weekly-room ') !== -1 || (' ' + target.className + ' ').indexOf(' forecast-card ') !== -1)) && target.offsetWidth !== 0 && target.offsetHeight !== 0);
+      }
+      function focusTarget(target) {
+        target.focus();
+        if (target.tagName !== 'BUTTON' && target.scrollIntoView) { target.scrollIntoView(false); }
+      }
+      function ensureFocus() {
+        if (sleeping) { element('panel-standby').focus(); return; }
+        if (!focusable(document.activeElement)) { focusHeader(); }
+      }
+      function restoreFocus() {
+        if (sleeping) { element('panel-standby').focus(); return; }
+        var target = returnFocus ? element(returnFocus) : null;
+        returnFocus = '';
+        if (target && !target.disabled) { target.focus(); }
+        else { ensureFocus(); }
+      }
+      function moveFocus(code) {
+        var buttons = document.querySelectorAll('.focusable');
+        var current = document.activeElement;
+        var rect = current && current.getBoundingClientRect ? current.getBoundingClientRect() : null;
+        var active = false;
+        var first = null;
+        var best = null;
+        var bestScore = Infinity;
+        var i, button, box, dx, dy, forward, sideways, score;
+        for (i = 0; i < buttons.length; i += 1) {
+          if (focusable(buttons[i])) {
+            if (!first) { first = buttons[i]; }
+            if (buttons[i] === current) { active = true; }
+          }
+        }
+        if (!active || !rect) { if (first) { focusTarget(first); } return; }
+        for (i = 0; i < buttons.length; i += 1) {
+          button = buttons[i];
+          if (!focusable(button) || button === current) { continue; }
+          box = button.getBoundingClientRect();
+          dx = (box.left + box.right - rect.left - rect.right) / 2;
+          dy = (box.top + box.bottom - rect.top - rect.bottom) / 2;
+          if ((code === 38 || code === 40) && button.id === 'forecast-section' &&
+              (rect.left + rect.right) / 2 >= box.left && (rect.left + rect.right) / 2 <= box.right) { dx = 0; }
+          forward = code === 37 ? -dx : code === 39 ? dx : code === 38 ? -dy : dy;
+          sideways = code === 37 || code === 39 ? Math.abs(dy) : Math.abs(dx);
+          if (forward > 4) {
+            score = forward + sideways * 3;
+            if (score < bestScore) { best = button; bestScore = score; }
+          }
+        }
+        if (best) { focusTarget(best); }
+      }
+      function bind(item) { element(item.id).addEventListener('click', function () { run(item); }); }
+      var i;
+      for (i = 0; i < controls.length; i += 1) { bind(controls[i]); }
+      element('refresh').addEventListener('click', function () { refresh(true); });
+      element('completion-confirm').addEventListener('click', confirmCompletion);
+      element('weekly-toggle').addEventListener('click', function () { weeklyOpen = !weeklyOpen; drawWeekly(featureData && featureData.weekly); });
+      element('panel-standby').addEventListener('click', function () { wakeStandby(); });
+      document.addEventListener('keydown', function (event) {
+        var code = event.keyCode || event.which;
+        var target;
+        if (wakeHeld === code && code !== 0) { event.preventDefault(); return; }
+        if (sleeping) {
+          event.preventDefault();
+          if ((code >= 37 && code <= 40) || code === 13 || code === 9 || code === 8 || code === 27 || code === 166 || code === 461 || event.key === 'BrowserBack') { wakeHeld = code; enterHeld = code === 13; wakeStandby(); }
+          return;
+        }
+        if (code >= 37 && code <= 40) {
+          event.preventDefault(); returnFocus = ''; moveFocus(code);
+        } else if (code === 13) {
+          event.preventDefault();
+          if (enterHeld || event.repeat) { return; }
+          enterHeld = true;
+          target = document.activeElement;
+          if (target && target.tagName === 'BUTTON' && !target.disabled) { target.click(); }
+        } else if (code === 8 || code === 27 || code === 166 || code === 461 || event.key === 'BrowserBack') {
+          event.preventDefault();
+          if (!requestPanelBack()) { focusHeader(); }
+        } else if (code === 9) { returnFocus = ''; }
+      });
+      document.addEventListener('keyup', function (event) {
+        if ((event.keyCode || event.which) === wakeHeld) { event.preventDefault(); wakeHeld = 0; }
+        if ((event.keyCode || event.which) === 13) { event.preventDefault(); enterHeld = false; }
+      });
+      document.addEventListener('keypress', function (event) {
+        if ((event.keyCode || event.which) === 13) { event.preventDefault(); }
+      });
+      if (window.addEventListener) {
+        window.addEventListener('blur', function () { enterHeld = false; wakeHeld = 0; });
+      }
+      initFeatures();
+      initCompletionAlerts();
+      loadTheme();
+      initSnapshot();
+      clock();
+      setInterval(clock, 1000);
+      setInterval(refresh, 20000);
+      refresh();
+    }());
+  </script>
+</body>
+</html>
