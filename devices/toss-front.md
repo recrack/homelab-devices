@@ -25,6 +25,12 @@
 
 호환성을 확인할 때는 전원을 통과시키는 허브와 기기 정격(12V 2.5A)을 충족하는 전원을 사용합니다. 정상 부팅 후 같은 허브에 USB 마우스를 연결해 포인터가 뜨는지 확인합니다. 마우스가 동작하면 Android가 해당 연결에서 USB 호스트로 동작한 것입니다. 이후 USB Audio Class 1 호환 마이크로 녹음해 실제 입력을 확인합니다. 부팅이나 마우스 인식에 실패하면 해당 허브와 전원 조합의 결과로 기록합니다. [세대별 전원 사양 보고](https://gall.dcinside.com/mgallery/board/view/?id=sunmitechnology&no=21) · [AOSP USB 오디오 조건](https://source.android.com/docs/core/audio/usb#host-mode)
 
+### 바닥 5핀 포트에 OTG 젠더 연결
+
+USB-C로 기본 전원을 공급하면서 바닥 5핀 microUSB에 OTG 젠더를 꽂아 USB 마이크로 녹음한 `PLF02WH` 사례는 찾지 못했습니다. 5핀으로 유선 ADB가 연결될 때는 PC가 USB 호스트입니다. 마이크를 연결할 때는 프론트가 호스트가 되어야 하며, 해당 포트의 역할 전환은 보드 배선과 펌웨어 지원에 달려 있습니다. [USB-IF OTG 규격](https://www.usb.org/sites/default/files/otgeh_compliance_plan_1_2.pdf) · [Android USB 호스트 안내](https://developer.android.com/develop/connectivity/usb)
+
+이 조합을 확인하려면 USB-C에 기본 전원을 연결한 상태에서 바닥 포트의 PC 케이블을 빼고 microUSB 수 → USB-A 암 OTG 젠더에 유선 마우스를 꽂습니다. 마우스 포인터가 움직이면 그 상태에서 UAC1 호환 마이크로 바꿔 실제 녹음과 재생을 확인합니다. [AOSP USB 오디오 조건](https://source.android.com/docs/core/audio/usb#host-mode)
+
 ## 프론트 2의 Spotify와 USB 마이크
 
 한 SFF 작성자는 커스텀 LineageOS에서 Spotify가 Play 스토어 검색에 나오지 않았지만, APK를 따로 설치하자 실행됐다고 보고했습니다. Android가 마이크 기능을 보고하도록 빌드를 수정한 뒤에는 Play 스토어 검색에 나왔고, 외장 USB 무선 마이크로 녹음도 했습니다. 순정 펌웨어에서의 Spotify 노출과 USB 마이크 동작은 미확인입니다. [SFF 실사용 보고](https://m.dcinside.com/board/sff/1741473)
