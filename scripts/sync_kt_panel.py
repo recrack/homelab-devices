@@ -101,7 +101,7 @@ def matches(staging):
 
 def publish(commit):
     repo = os.environ["GITHUB_REPOSITORY"]
-    branch = f"sync/kt-table-tv-{commit[:12]}"
+    branch = f"verify/sync-update-20261128-{commit[:12]}"
     base = git("rev-parse", "HEAD").strip()
     git("switch", "-c", branch)
     git("add", "-A", "--", str(DESTINATION))
@@ -123,7 +123,7 @@ def publish(commit):
                         "--json", "url,state,headRefOid,isDraft,baseRefName", "--limit", "1"))
     if prs:
         pr = prs[0]
-        if pr["state"] != "OPEN" or pr["isDraft"] or pr["headRefOid"] != head or pr["baseRefName"] != "main":
+        if pr["state"] != "OPEN" or pr["isDraft"] or pr["headRefOid"] != head or pr["baseRefName"] != "verify/sync-20261128":
             raise ValueError("Existing sync PR was changed or closed. It needs review.")
         url = pr["url"]
     else:
@@ -135,7 +135,7 @@ def publish(commit):
             "- **이후** · 원본 파일 경로와 파일 유형을 확인하고 MIT 라이선스와 제3자 고지의 SHA-256을 대조했습니다.\n\n"
             "## Merge Danger\n\nGit에서 되돌릴 수 있습니다. 변경 범위는 KT 패널 아카이브입니다.\n"
         )
-        url = create_pr(repo, branch, f"[Sync] KT Table TV 패널 {commit[:12]}", body)
+        url = create_pr(repo, branch, f"[Sync verification] KT Table TV 패널 {commit[:12]}", body)
     note(f"소스 동기화 PR · {url}")
     gh("pr", "merge", url, "--squash", "--match-head-commit", head)
     note(f"소스 동기화 병합 완료 · {url}")
@@ -147,7 +147,7 @@ def main():
     mode.add_argument("--check", action="store_true", help="Validate upstream and show whether the archive would change.")
     mode.add_argument("--publish", action="store_true", help="Open and merge an archive-only PR in GitHub Actions.")
     args = parser.parse_args()
-    if args.publish and (os.getenv("GITHUB_ACTIONS") != "true" or os.getenv("GITHUB_REF") != "refs/heads/main"):
+    if args.publish and (os.getenv("GITHUB_ACTIONS") != "true" or os.getenv("GITHUB_REF") != "refs/heads/verify/sync-20261128"):
         parser.error("--publish requires GitHub Actions on main")
     if not args.check and git("status", "--porcelain", "--", str(DESTINATION)):
         parser.error(f"{DESTINATION} has local changes. Commit or move them before syncing.")

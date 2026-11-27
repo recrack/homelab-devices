@@ -40,7 +40,7 @@ async function main() {
   let previous; try { previous = await loadSetup(resolve(root, 'runtime/setup.json')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   const args = process.argv.slice(2), flags = {};
   for (let i = 0; i < args.length; i += 2) {
-    if (!/^--(?:ha-url|host|device|room-one|room-two|scene-one-on|scene-one-off|scene-two-on|scene-two-off|weather-location)$/.test(args[i]) || args[i + 1] === undefined) throw new Error('설정 인수를 확인하세요.');
+    if (!/^--(?:ha-url|host|device|room-one|room-two|scene-one-on|scene-one-off|scene-two-on|scene-two-off)$/.test(args[i]) || args[i + 1] === undefined) throw new Error('설정 인수를 확인하세요.');
     flags[args[i].slice(2)] = args[i + 1];
   }
   const cli = args.length > 0, prompt = cli ? null : createInterface({ input: process.stdin, output: process.stdout });
@@ -57,11 +57,6 @@ async function main() {
       const key = i ? 'two' : 'one', old = previous?.rooms[i];
       input.rooms.push({ id: i ? 'bedroom' : 'living', name: await ask('room-' + key, `방 ${i + 1} 이름`, old?.name), scenes: { on: await ask('scene-' + key + '-on', `방 ${i + 1} 켜기 장면 엔티티 ID`, old?.scenes.on, true), off: await ask('scene-' + key + '-off', `방 ${i + 1} 끄기 장면 엔티티 ID`, old?.scenes.off, true) } });
     }
-    const previousWeather = previous?.weather?.source === 'ha' ? 'ha' : (previous?.weather?.location || '서울');
-    const weatherChoice = await ask('weather-location', '날씨 지역 (네이버 날씨, 기본 서울 / HA 사용 시 ha)', previousWeather);
-    input.weather = String(weatherChoice || '서울').trim().toLowerCase() === 'ha'
-      ? { source: 'ha', location: null }
-      : { source: 'naver', location: String(weatherChoice || '서울').trim() || '서울' };
     const result = await initialize(root, input);
     console.log('설정 완료. 기존 인증 키는 보존하고, 첫 실행이면 새 키를 만들었습니다.');
     if (result.changedAddress) console.log('주소가 변경되었습니다. 서버를 다시 시작하고 Android 앱도 다시 빌드하세요.');

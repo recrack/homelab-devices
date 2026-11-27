@@ -72,7 +72,7 @@ async function backend(t, extraOptions = {}) {
   let broken = false;
   const ha = { url: base().homeAssistant.url, connected: false, async init() { await mkdir(join(runtime, 'panel'), { recursive: true, mode: 0o700 }); }, async exchange(code, verifier) { calls.push({ exchange: code, verifier }); this.connected = true; }, async websocket() { if (broken) throw new Error('fixture failure'); return data; }, async json() { return []; }, async request(path, init) { calls.push({ path, init }); return Response.json({}); } };
   const reserve = http.createServer(); reserve.listen(0, '127.0.0.1'); await once(reserve, 'listening'); const port = reserve.address().port; await new Promise(done => reserve.close(done));
-  const app = await createPanelServer(base(), { ha, runtime, port, weatherProvider: null, ...extraOptions }); app.server.listen(port, '127.0.0.1'); await once(app.server, 'listening'); t.after(() => app.stop());
+  const app = await createPanelServer(base(), { ha, runtime, port, ...extraOptions }); app.server.listen(port, '127.0.0.1'); await once(app.server, 'listening'); t.after(() => app.stop());
   const origin = `http://localhost:${port}`;
   return { origin, runtime, ha, calls, offline() { broken = true; }, get: path => fetch(origin + path), post: (path, body, csrf) => fetch(origin + path, { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }, body: JSON.stringify(body) }) };
 }

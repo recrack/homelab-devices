@@ -30,35 +30,11 @@ const weatherConditions = {
 function weatherText(value, fallback) {
   return typeof value === 'string' && value.trim() ? value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 80) || fallback : fallback;
 }
-const weatherPlatformPriority = {
-  kma: 5,
-  kma_weather: 5,
-  weather_fusion: 4,
-  korea_weather_fusion: 4,
-  naver_weather: 3,
-  open_meteo: 2,
-  met: 1,
-};
-const weatherPlatformSources = {
-  kma: '기상청',
-  kma_weather: '기상청',
-  weather_fusion: '네이버·기상청',
-  korea_weather_fusion: '네이버·기상청',
-  naver_weather: '네이버 날씨',
-  open_meteo: 'Open-Meteo',
-  met: 'MET Norway',
-};
 export function selectedWeatherState(states, entityMap) {
   const candidates = states.filter(state => {
     const entry = entityMap.get(state.entity_id);
     return state.entity_id.startsWith('weather.') && !entry?.disabled_by && !entry?.hidden_by && entry?.entity_category == null;
-  }).sort((a, b) => {
-    const availDiff = Number(Object.hasOwn(weatherConditions, b.state)) - Number(Object.hasOwn(weatherConditions, a.state));
-    if (availDiff) return availDiff;
-    const pa = weatherPlatformPriority[entityMap.get(a.entity_id)?.platform] || 0;
-    const pb = weatherPlatformPriority[entityMap.get(b.entity_id)?.platform] || 0;
-    return pb - pa || a.entity_id.localeCompare(b.entity_id);
-  });
+  }).sort((a, b) => Number(Object.hasOwn(weatherConditions, b.state)) - Number(Object.hasOwn(weatherConditions, a.state)) || a.entity_id.localeCompare(b.entity_id));
   return candidates[0] || null;
 }
 function weatherSummary(states, entityMap) {
@@ -72,10 +48,9 @@ function weatherSummary(states, entityMap) {
     if (unit === '°C') temperatureC = Number(raw);
     else if (unit === '°F') temperatureC = (Number(raw) - 32) / 9 * 5;
   }
+  const name = weatherText(state.attributes?.friendly_name, '날씨');
   const platform = entityMap.get(state.entity_id)?.platform;
-  const rawName = weatherText(state.attributes?.friendly_name, '날씨');
-  const name = platform === 'weather_fusion' ? rawName.replace(/\s+(?:날씨|weather)$/i, '').trim() || rawName : rawName;
-  const source = Object.hasOwn(weatherPlatformSources, platform) ? weatherPlatformSources[platform] : weatherText(state.attributes?.friendly_name, 'Home Assistant');
+  const source = platform === 'met' ? 'MET Norway' : platform === 'open_meteo' ? 'Open-Meteo' : weatherText(state.attributes?.friendly_name, 'Home Assistant');
   return {
     available, conditionCode: available ? state.state : null, condition: available ? weatherConditions[state.state] : null,
     temperatureC, name, source,
@@ -108,7 +83,6 @@ export function buildDashboard(states, registry = [], devices = [], areas = [], 
   const relevant = states.filter(s => {
     if(s.entity_id.startsWith('scene.') || s.entity_id.startsWith('weather.') || washerEntities.has(s.entity_id))return false;
     const platform = entityMap.get(s.entity_id)?.platform;
-    if (Object.hasOwn(weatherPlatformSources, platform)) return false;
     return isCo2Sensor(s) || ['tuya', 'smartthings'].includes(platform) ||
       ['light', 'switch', 'fan', 'climate'].includes(s.entity_id.split('.')[0]) ||
       (['temperature', 'humidity'].includes(s.attributes?.device_class) &&

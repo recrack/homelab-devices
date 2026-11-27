@@ -72,7 +72,7 @@ def create_pr(repo, branch, title, body, draft=False):
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as stream:
         stream.write(body)
         stream.flush()
-        args = ["pr", "create", "--repo", repo, "--base", "main", "--head", branch,
+        args = ["pr", "create", "--repo", repo, "--base", "verify/sync-20261128", "--head", branch,
                 "--title", title, "--body-file", stream.name]
         if draft:
             args.append("--draft")

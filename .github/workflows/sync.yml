@@ -16,7 +16,7 @@ concurrency: device-source-sync
 
 jobs:
   sync:
-    if: github.repository == 'recrack/homelab-devices' && github.ref == 'refs/heads/main'
+    if: github.repository == 'recrack/homelab-devices' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/verify/sync-20261128'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:

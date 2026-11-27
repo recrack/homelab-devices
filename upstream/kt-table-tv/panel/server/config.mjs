@@ -25,22 +25,7 @@ export function validateSetup(input) {
     }
     return { id: room.id, name: room.name.trim(), scenes: selected };
   });
-  let weather = { source: 'naver', location: '서울' };
-  if (input.weather != null) {
-    if (typeof input.weather !== 'object' || Array.isArray(input.weather)) throw new Error('날씨 설정 형식이 올바르지 않습니다.');
-    const source = input.weather.source === undefined ? 'naver' : input.weather.source;
-    if (!['naver', 'ha'].includes(source)) throw new Error('날씨 출처는 naver 또는 ha만 지원합니다.');
-    if (source === 'ha') {
-      weather = { source: 'ha', location: null };
-    } else {
-      const rawLocation = input.weather.location == null ? '서울' : input.weather.location;
-      if (typeof rawLocation !== 'string' || !rawLocation.trim() || rawLocation.trim().length > 40 || /[\u0000-\u001f\u007f<>&"'\\]/.test(rawLocation)) {
-        throw new Error('날씨 지역명을 올바르게 입력하세요.');
-      }
-      weather = { source: 'naver', location: rawLocation.trim() };
-    }
-  }
-  return { schema: 1, server: { address: input.server.address, port: 4173, legacyPort: 4181 }, device: { address: input.device.address }, homeAssistant: { url: url.origin }, rooms, weather };
+  return { schema: 1, server: { address: input.server.address, port: 4173, legacyPort: 4181 }, device: { address: input.device.address }, homeAssistant: { url: url.origin }, rooms };
 }
 export async function readPrivateJson(path, maximum = 65536) {
   let file;
