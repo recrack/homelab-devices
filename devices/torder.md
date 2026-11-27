@@ -9,8 +9,9 @@
 | `T2N` | 티오더가 주문 태블릿으로 FCC에 등록한 모델 `2BTKVT2N` | [FCC 인증 기록](https://fccid.io/2BTKVT2N) |
 | `torder pad`, `torderpad` | `U10PRO`의 파생 모델. 전파 인증번호 `R-C-T0C-U10PRO` | [국립전파연구원 인증 기록](https://www.rra.go.kr/ko/license/A_b_popup_keyno.do?key_no=R-C-T0C-U10PRO) |
 | `torder-pad`, `torder_pad` | `R10D`의 파생 모델. 전파 인증번호 `R-C-T0C-R10D` | [국립전파연구원 인증 기록](https://www.rra.go.kr/ko/license/A_b_popup_keyno.do?key_no=R-C-T0C-R10D) |
+| `torder-pad`, `P10HDLITE` | `P10HD`의 파생 모델. 전파 인증번호 `R-C-T0C-P10HD` | [국립전파연구원 인증 기록](https://www.rra.go.kr/ko/license/A_b_popup_keyno.do?key_no=R-C-T0C-P10HD) |
 
-비슷한 제품명이 두 국내 인증에 쓰입니다. 인증번호까지 대조해 기기를 식별하고, `torder pad` 계열의 Android 버전과 메모리는 기기별로 확인합니다.
+`torder-pad`라는 이름이 `R10D`와 `P10HD` 인증에 모두 나옵니다. 인증번호까지 대조해 기기를 식별하고, Android 버전과 메모리는 기기별로 확인합니다. 중고 매물에도 티오더 단말이 `P10HD`와 `APEX P10HD Lite`로 각각 표기됩니다. [P10HD 매물](https://cafe.naver.com/moopung/186956) · [P10HD Lite 매물](https://cafe.naver.com/joonggonara/1134413521)
 
 ## T2N 공개 사양
 
@@ -33,4 +34,7 @@
 
 ## 커뮤니티 조사
 
-네이버 카페의 게시글 본문은 읽을 수 없어 티오더 관련 사례를 확인하지 못했습니다. 카페 안에서 확인할 때는 `티오더`, `torder_pad`, `R10D`, `U10PRO`, `T2N`으로 검색합니다. [모두의 스마트홈](https://cafe.naver.com/stsmarthome) · [Do the SmartThings](https://cafe.naver.com/dothesmartthings)
+- 디벨로이드 댓글에서 일부 사용자가 티오더 단말로 일반 앱을 썼다고 보고했습니다. 한 댓글은 Android 설정에서 기본 홈 앱을 `QuickStep`으로 바꿀 수 있고 초기화하면 티오더 앱이 다시 나타난다고 설명합니다. 댓글에 기기 인증번호나 펌웨어 빌드는 없었습니다. [티오더 태블릿 일반 사용 질문과 댓글](https://cafe.naver.com/develoid/1056040)
+- 모두의 스마트홈에는 식당 주문 태블릿을 대시보드로 쓸 수 있는지 묻는 글이 있습니다. 글과 댓글에서 티오더 모델을 특정하거나 Home Assistant 구동을 보여준 사례는 확인하지 못했습니다. [태블릿 형태 오더기기 활용 질문](https://cafe.naver.com/stsmarthome/119158)
+
+링크에서 본문이 열리지 않으면 네이버 검색의 카페 탭에서 게시글 제목을 검색해 결과를 엽니다.
