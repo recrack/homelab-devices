@@ -16,8 +16,10 @@
 
 ## 이슈에서 초안 PR까지
 
-1. Copilot은 제목과 제한된 원문을 읽고, 정확한 기기·프로젝트와 확인된 동작 또는 릴리스 변경점을 고릅니다.
+1. Copilot은 모델 작업 내부에서 제목과 제한된 원문을 읽고, 정확한 기기·프로젝트와 확인된 동작 또는 릴리스 변경점을 고릅니다.
 2. 스크립트는 모델이 인용한 문장이 실제로 수집한 원문에 존재하는지 확인합니다. 통과한 항목의 요약과 출처를 `research/verified/issue-<번호>.md`에 기록하는 초안 PR을 엽니다.
 3. PR에서 출처와 기기 모델, OS 버전, 검증 범위를 확인한 뒤 병합합니다. 실기기에서 검증한 내용은 검증자와 환경을 함께 남깁니다.
 
 모델은 기존 자료를 검토합니다. 실기기에서 동작을 재현하는 단계는 사람이 수행합니다. GitHub Actions 표준 러너의 실행 시간과 Copilot AI 크레딧은 별도로 계산됩니다. 분석 세션의 [AI 크레딧 상한](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/set-session-limit)은 30으로 설정되어 있습니다.
+
+자동 생성 PR은 요약, 검증 근거, 병합 영향을 표시합니다. [Matt Pocock PR 스킬](https://github.com/mattpocock/skills/blob/main/skills/engineering/pr/SKILL.md)

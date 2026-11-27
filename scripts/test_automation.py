@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from research import candidate, canonical, dc_rows, new_candidates, reviewed_rows
+from research import candidate, candidate_metadata, canonical, dc_rows, new_candidates, reviewed_rows
 from sync_kt_panel import archive_files, source_paths, validate_notice
 
 
@@ -43,6 +43,13 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(len(reviewed_rows([item], [row, row])), 1)
         self.assertEqual(reviewed_rows([item], [{**row, "support": "다른 기기에서 작동했습니다."}]), [])
         self.assertEqual(reviewed_rows([item], [{**row, "id": 2}]), [])
+
+    def test_job_outputs_exclude_original_excerpts(self):
+        item = candidate("네이버 카페", "테스트 글", "https://cafe.naver.com/stsmarthome/123",
+                         "원문 일부는 모델 작업에서만 읽습니다.")
+        metadata = candidate_metadata([item])
+        self.assertNotIn("evidence", metadata[0])
+        self.assertEqual(metadata[0]["url"], item["url"])
 
 
 class SyncTests(unittest.TestCase):

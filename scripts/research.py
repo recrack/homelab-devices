@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -61,6 +62,17 @@ def gh(*args, data=None):
 def api(path, **params):
     query = urllib.parse.urlencode(params)
     return json.loads(gh("api", f"{path}?{query}" if query else path))
+
+
+def create_pr(repo, branch, title, body, draft=False):
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as stream:
+        stream.write(body)
+        stream.flush()
+        args = ["pr", "create", "--repo", repo, "--base", "main", "--head", branch,
+                "--title", title, "--body-file", stream.name]
+        if draft:
+            args.append("--draft")
+        return gh(*args).strip()
 
 
 def note(message):
@@ -124,11 +136,11 @@ def recent(value):
     return CUTOFF <= dt.date.fromisoformat(value[:10]) <= TODAY
 
 
-def candidate(source, title, url, evidence="", date="", readme="", description=""):
+def candidate(source, title, url, evidence="", date="", reference="", description=""):
     return {
         "source": source, "title": text(title)[:160], "url": canonical(url),
         "evidence": text(evidence)[:2200], "date": date[:10],
-        "readme": readme, "description": text(description)[:300],
+        "reference": reference, "description": text(description)[:300],
     }
 
 
@@ -140,7 +152,8 @@ def github():
                 continue
             found.append(candidate(
                 "GitHub 릴리스", release["name"] or release["tag_name"], release["html_url"],
-                release["body"], release["published_at"], description=repo,
+                date=release["published_at"], reference=f"{repo}/releases/{release['id']}",
+                description=repo,
             ))
     for query in GITHUB_QUERIES:
         results = api("search/repositories", q=f"({query}) in:name,description,readme fork:false is:public created:>={CUTOFF}", per_page=10)
@@ -148,7 +161,7 @@ def github():
             if not repo["private"] and not repo["fork"] and not repo["archived"] and recent(repo["created_at"]):
                 found.append(candidate(
                     "GitHub 저장소", repo["full_name"], repo["html_url"], date=repo["created_at"],
-                    readme=repo["full_name"], description=repo["description"],
+                    reference=f"{repo['full_name']}/readme", description=repo["description"],
                 ))
     return found
 
@@ -163,14 +176,18 @@ def dc_rows(page):
             yield number, text(title[1]), date[1]
 
 
-def dc():
-    host = "https://gall.dcinside.com"
+def dc_robots():
     robots = urllib.robotparser.RobotFileParser()
-    robots.parse(fetch(host + "/robots.txt").splitlines())
+    robots.parse(fetch("https://gall.dcinside.com/robots.txt").splitlines())
+    return robots
+
+
+def dc():
+    robots = dc_robots()
     found = []
     for term in KOREAN_QUERIES:
         query = urllib.parse.urlencode({"id": "sff", "s_type": "search_subject", "s_keyword": term})
-        url = f"{host}/mgallery/board/lists/?{query}"
+        url = f"https://gall.dcinside.com/mgallery/board/lists/?{query}"
         if not robots.can_fetch(USER_AGENT, url):
             raise ValueError("SFF search is disallowed by robots.txt")
         page = fetch(url)
@@ -179,7 +196,7 @@ def dc():
         for number, title, date in dc_rows(page):
             if recent(date):
                 found.append(candidate("DC SFF", title, f"https://m.dcinside.com/board/sff/{number}", date=date))
-    return found, robots
+    return found
 
 
 def naver():
@@ -213,15 +230,27 @@ def new_candidates(items, known):
     return result
 
 
-def enrich(items, robots):
+def candidate_metadata(items):
+    fields = ("source", "title", "url", "date", "reference", "description")
+    return [{key: item[key] for key in fields} for item in items]
+
+
+def enrich(items):
+    robots = None
+    naver_evidence = None
     for item in items:
+        item["evidence"] = ""
         try:
-            if item["readme"]:
+            if item["source"] == "GitHub 저장소":
                 item["evidence"] = text(gh(
-                    "api", f"repos/{item['readme']}/readme",
+                    "api", f"repos/{item['reference']}",
                     "-H", "Accept: application/vnd.github.raw+json",
                 ))[:2200]
+            elif item["source"] == "GitHub 릴리스":
+                item["evidence"] = text(api(f"repos/{item['reference']}")["body"])[:2200]
             elif item["source"] == "DC SFF":
+                if robots is None:
+                    robots = dc_robots()
                 number = item["url"].rsplit("/", 1)[-1]
                 url = f"https://gall.dcinside.com/mgallery/board/view/?id=sff&no={number}"
                 if robots.can_fetch(USER_AGENT, url):
@@ -230,7 +259,12 @@ def enrich(items, robots):
                     if match:
                         body = re.sub(r"<(?:script|style)\b[^>]*>.*?</(?:script|style)>", "", match[1], flags=re.S | re.I)
                         item["evidence"] = text(body)[:2200]
-        except (OSError, subprocess.CalledProcessError):
+            elif item["source"] == "네이버 카페":
+                if naver_evidence is None:
+                    naver_evidence = {}
+                    naver_evidence.update({article["url"]: article["evidence"] for article in naver()})
+                item["evidence"] = naver_evidence.get(item["url"], "")
+        except (OSError, ValueError, KeyError, subprocess.CalledProcessError):
             note(f"{item['source']} · 원문 확인 실패. 후보로만 남깁니다.")
 
 
@@ -246,12 +280,10 @@ def collect(dry_run):
             if issue["user"]["login"] == "github-actions[bot]" and body.startswith(MARKER):
                 known.update(links(body))
 
-    sources, robots = [], None
+    sources = []
     for label, provider in (("GitHub", github), ("DC SFF", dc), ("네이버 카페", naver)):
         try:
             found = provider()
-            if label == "DC SFF":
-                found, robots = found
             note(f"{label} · 수집 {len(found)}건")
             sources.extend(found)
         except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
@@ -262,7 +294,6 @@ def collect(dry_run):
     note(f"중복 제거 후 새 후보 {len(items)}건")
     if not items:
         return
-    enrich(items, robots)
     body = f"{MARKER}\n\n모델 분석 전 수집한 후보입니다. 네이버 카페 검색 결과에는 게시일이 제공되지 않습니다.\n"
     for item in items:
         date = f" · {item['date']}" if item["date"] else ""
@@ -274,7 +305,7 @@ def collect(dry_run):
         issue = json.loads(gh("api", f"repos/{repo}/issues", "--method", "POST", "--input", "-", data={"title": title, "body": body}))
         note(f"수집 이슈 · {issue['html_url']}")
         output("issue", issue["number"])
-    output("candidates", json.dumps(items, ensure_ascii=False))
+    output("candidates", json.dumps(candidate_metadata(items), ensure_ascii=False))
 
 
 def reviewed_rows(items, answer):
@@ -305,6 +336,7 @@ def reviewed_rows(items, answer):
 
 def judge():
     items = json.loads(os.environ["RESEARCH_CANDIDATES"])
+    enrich(items)
     if not any(item["evidence"] for item in items):
         note("모델이 검토할 원문 근거가 없습니다.")
         return
@@ -330,6 +362,8 @@ Evidence follows as JSON:
          "--no-custom-instructions", "--disable-builtin-mcps", "--available-tools=report_intent",
          "--sync-session=off"],
         check=True, text=True, stdout=subprocess.PIPE, timeout=240,
+        env={key: value for key, value in os.environ.items()
+             if not key.startswith("NAVER_API_HUB_") and key != "RESEARCH_CANDIDATES"},
     )
     answer = result.stdout.strip()
     if fenced := re.fullmatch(r"\x60\x60\x60(?:json)?\s*(.*?)\s*\x60\x60\x60", answer, re.S):
@@ -371,14 +405,26 @@ def publish():
     remote = subprocess.run(["git", "ls-remote", "--heads", "origin", f"refs/heads/{branch}"],
                             check=True, text=True, stdout=subprocess.PIPE).stdout
     if remote:
-        git("fetch", "origin", branch)
-        git("diff", "--exit-code", "FETCH_HEAD", "HEAD")
+        git("fetch", "--depth=2", "origin", branch)
+        changed = subprocess.run(
+            ["git", "diff", "--name-only", "FETCH_HEAD^", "FETCH_HEAD"],
+            check=True, text=True, stdout=subprocess.PIPE,
+        ).stdout.splitlines()
+        if changed != [str(path)]:
+            raise ValueError("Existing research branch contains unrelated changes")
+        git("diff", "--exit-code", "FETCH_HEAD", "HEAD", "--", str(path))
     else:
         git("push", "origin", f"HEAD:refs/heads/{branch}")
-    url = gh("pr", "create", "--repo", repo, "--base", "main", "--head", branch, "--draft",
-             "--title", f"[Research] 이슈 #{issue} 근거 검토",
-             "--body", f"수집 이슈 #{issue}에서 모델 검토와 근거 검사를 통과한 문서 변경입니다. 출처와 호환 범위를 검토해 주세요.")
-    note(f"초안 PR · {url.strip()}")
+    body = (
+        f"## Summary\n\n수집 이슈 #{issue}에서 확인한 내용을 \x60{path}\x60에 정리했습니다.\n\n"
+        "## Evidence\n\n"
+        f"- **이전** · 이슈에 수집한 후보와 출처가 있습니다.\n"
+        f"- **이후** · 모델이 인용한 문장이 해당 원문에 있는지 검사한 {len(findings)}건을 정리했습니다. "
+        "보고서에서 출처와 확인 범위를 검토할 수 있습니다.\n\n"
+        "## Merge Danger\n\nGit에서 되돌릴 수 있습니다. 변경 범위는 리서치 문서 한 편입니다.\n"
+    )
+    url = create_pr(repo, branch, f"[Research] 이슈 #{issue} 근거 검토", body, draft=True)
+    note(f"초안 PR · {url}")
 
 
 if __name__ == "__main__":

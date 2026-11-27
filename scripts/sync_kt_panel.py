@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from research import gh, note
+from research import create_pr, gh, note
 
 
 PROJECT = "dasjjl-svg/KT_TABLE_TV"
@@ -127,10 +127,15 @@ def publish(commit):
             raise ValueError("Existing sync PR was changed or closed. It needs review.")
         url = pr["url"]
     else:
-        url = gh("pr", "create", "--repo", repo, "--base", "main", "--head", branch,
-                 "--title", f"[Sync] KT Table TV 패널 {commit[:12]}",
-                 "--body", f"원본 커밋 {ORIGIN}/commit/{commit}\n\n"
-                 "MIT 라이선스와 제3자 고지의 SHA-256을 확인했습니다. 보존 범위는 패널과 PC 설정 소스입니다.").strip()
+        body = (
+            f"## Summary\n\n\x60{DESTINATION}/\x60의 패널과 PC 설정 소스를 갱신합니다. "
+            f"[원본 커밋]({ORIGIN}/commit/{commit})\n\n"
+            "## Evidence\n\n"
+            "- **이전** · 기존 아카이브와 원본 파일에 차이가 있습니다.\n"
+            "- **이후** · 원본 파일 경로와 파일 유형을 확인하고 MIT 라이선스와 제3자 고지의 SHA-256을 대조했습니다.\n\n"
+            "## Merge Danger\n\nGit에서 되돌릴 수 있습니다. 변경 범위는 KT 패널 아카이브입니다.\n"
+        )
+        url = create_pr(repo, branch, f"[Sync] KT Table TV 패널 {commit[:12]}", body)
     note(f"소스 동기화 PR · {url}")
     gh("pr", "merge", url, "--squash", "--match-head-commit", head)
     note(f"소스 동기화 병합 완료 · {url}")
