@@ -6,6 +6,7 @@ import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
 import { HomeAssistant } from './ha.mjs';
 import { buildDashboard, selectedWeatherState, validateSceneRun } from './model.mjs';
 import { PanelInsights } from './insights.mjs';
+import { createNaverWeather } from './naver-weather.mjs';
 import { WeeklyEnvironment } from './weekly.mjs';
 import { WeeklyView } from './weekly-view.mjs';
 import { PanelFeatures, runFavorite } from './features.mjs';
@@ -26,25 +27,36 @@ async function body(req) {
   return JSON.parse(Buffer.concat(parts).toString());
 }
 
-export async function createPanelServer(config, { ha: injectedHa, runtime = join(projectRoot, 'runtime'), port = 4173, dist = join(panelRoot, 'dist'), sendReturn } = {}) {
+export async function createPanelServer(config, { ha: injectedHa, runtime = join(projectRoot, 'runtime'), port = 4173, dist = join(panelRoot, 'dist'), sendReturn, weatherProvider } = {}) {
   const origin = `http://localhost:${port}`, csrf = random(), catalog = sceneCatalog(config), flows = new Map();
   const ha = injectedHa || new HomeAssistant({ url: config.homeAssistant.url, dataDir: join(runtime, 'panel'), clientId: origin + '/' });
   await ha.init();
   const features = new PanelFeatures({ path: join(runtime, 'panel/features.json'), catalog });
   await features.init();
   const insights = new PanelInsights({ ha }), weekly = new WeeklyView({ weekly: new WeeklyEnvironment({ ha }) });
+  const weatherConfig = config.weather || { source: 'naver', location: '서울' };
+  const naverWeather = weatherProvider !== undefined
+    ? weatherProvider
+    : weatherConfig.source === 'naver'
+      ? createNaverWeather({ location: weatherConfig.location || '서울' })
+      : null;
   const maintenance = createPanelMaintenance({ directory: join(runtime, 'panel-maintenance'), ...(sendReturn ? { sendReturn } : {}) });
   let last = null, reading = null, readAt = 0, busy = false;
   async function dashboard(force = false) {
     if (!force && last && Date.now() - readAt < 12000) return last;
     if (reading) return reading;
     reading = (async () => {
-      const data = await ha.websocket(['get_states', 'config/entity_registry/list', 'config/device_registry/list', 'config/area_registry/list', 'config_entries/get']);
+      const [data, naver] = await Promise.all([
+        ha.websocket(['get_states', 'config/entity_registry/list', 'config/device_registry/list', 'config/area_registry/list', 'config_entries/get']),
+        naverWeather ? naverWeather.read().catch(() => null) : Promise.resolve(null),
+      ]);
       const states = data.get_states || [], registry = data['config/entity_registry/list'] || [];
       const view = buildDashboard(states, registry, data['config/device_registry/list'] || [], data['config/area_registry/list'] || [], data['config_entries/get'] || [], config);
       const weather = selectedWeatherState(states, new Map(registry.map(item => [item.entity_id, item])));
-      const extra = await insights.enrich(view, { weatherEntityId: weather?.entity_id, weatherAttributes: weather?.attributes });
-      view.forecast = extra.forecast;
+      const useNaver = Boolean(naver?.weather?.available);
+      if (useNaver) view.weather = naver.weather;
+      const extra = await insights.enrich(view, useNaver ? {} : { weatherEntityId: weather?.entity_id, weatherAttributes: weather?.attributes });
+      view.forecast = useNaver ? naver.forecast : extra.forecast;
       for (const room of view.rooms) { room.histories = extra.histories[room.id] || { temperature: [], humidity: [], co2: [] }; }
       view.updatedAt = new Date().toISOString();
       await features.observe(view, { reliable: true });
