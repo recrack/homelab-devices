@@ -72,7 +72,7 @@ def create_pr(repo, branch, title, body, draft=False):
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8") as stream:
         stream.write(body)
         stream.flush()
-        args = ["pr", "create", "--repo", repo, "--base", "main", "--head", branch,
+        args = ["pr", "create", "--repo", repo, "--base", "verify/research-20261128", "--head", branch,
                 "--title", title, "--body-file", stream.name]
         if draft:
             args.append("--draft")
@@ -391,7 +391,7 @@ Evidence follows as JSON:
 def publish():
     issue = int(os.environ["RESEARCH_ISSUE"])
     repo = os.environ["GITHUB_REPOSITORY"]
-    branch = f"research/issue-{issue}"
+    branch = "verify/research-draft-20261128"
     existing = json.loads(gh("pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "url", "--limit", "1"))
     if existing:
         note(f"이미 처리한 리서치 PR · {existing[0]['url']}")
@@ -437,7 +437,7 @@ def publish():
         "보고서에서 출처와 확인 범위를 검토할 수 있습니다.\n\n"
         "## Merge Danger\n\nGit에서 되돌릴 수 있습니다. 변경 범위는 리서치 문서 한 편입니다.\n"
     )
-    url = create_pr(repo, branch, f"[Research] 이슈 #{issue} 근거 검토", body, draft=True)
+    url = create_pr(repo, branch, f"[Research verification] 이슈 #{issue} 근거 검토", body, draft=True)
     note(f"초안 PR · {url}")
 
 
