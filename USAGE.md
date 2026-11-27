@@ -21,6 +21,7 @@
 | Echo Show 5/8 | 기종별 LineageOS 이미지와 Kiosk Satellite 사용 | [기기 문서](devices/amazon-echo-show.md), [기종·잠금 해제 문서](https://github.com/jxlarrea/lineageos-echo-kiosk-satellite/tree/main/docs) |
 | SUNMI V2 | 연구 후보. 특정 V2 펌웨어에 대한 루트 보고 조사 | [후보 문서](devices/sunmi-v2.md) |
 | CashNote Pay | 공개 사양과 재활용 가능성 확인 | [후보 문서](devices/cashnote-pay.md) |
+| 티오더 | 모델·인증번호 확인 후 일반 앱 실행 가능 여부 확인 | [후보 문서](devices/torder.md) |
 
 ## 기기별 사용 흐름
 
@@ -63,6 +64,8 @@
 ### 연구 후보
 
 SUNMI V2와 CashNote Pay는 확인된 모델별 재활용 안내가 충분하지 않습니다. [SUNMI V2 문서](devices/sunmi-v2.md)와 [CashNote Pay 문서](devices/cashnote-pay.md)를 조사 시작점으로만 사용하고, 다른 모델의 루트·펌웨어 방법을 적용하지 않습니다.
+
+티오더는 후면 라벨의 모델명과 인증번호를 [기기 식별 표](devices/torder.md#기기-식별)에서 확인합니다. 서비스 해지와 기기 등록 해제 여부는 판매자나 티오더에 확인합니다. 일반 브라우저를 실행할 수 있다면 Home Assistant 대시보드가 열리는지부터 확인합니다.
 
 ## Home Assistant 연결
 

@@ -2,7 +2,7 @@
 
 결제 단말기와 매장용 패널, 스마트 디스플레이처럼 전용 목적으로 판매된 기기를 홈랩에서 재활용하는 사례와 도구를 모읍니다.
 
-**조사 갱신일: 2026-11-27** · 비공개 저장소 · 원본 코드를 포크하거나 복사하지 않고 기기별 사양, 호환 범위, 프로젝트와 사용 문서를 연결합니다.
+**조사 갱신일: 2026-11-28** · 비공개 저장소 · 원본 코드를 포크하거나 복사하지 않고 기기별 사양, 호환 범위, 프로젝트와 사용 문서를 연결합니다.
 
 ## 아키텍처
 
@@ -60,6 +60,7 @@ Npay Connect와 Toss Front 문서는 기기 리서치와 복구 도구를 찾는
 | Amazon Echo Show 8 2세대 | A8H3N2 / `athena` | MT8183, 8인치 1280×800 HD, 13MP 카메라, 듀얼 스테레오 스피커, 듀얼밴드 Wi-Fi·Bluetooth | LineageOS/HA 이미지 · [문서](devices/amazon-echo-show.md) |
 | SUNMI V2 | T5930; 세대·구성 확인 필요 | Android 7.1, Cortex-A53 1.3/1.5GHz, RAM 1/2GB, 저장공간 8/16GB, 5.45인치 1440×720, 58mm 프린터 | 루팅 보고는 있으나 호환성 불확실 · [후보 문서](devices/sunmi-v2.md) |
 | CashNote Pay 단말기 | 정확한 모델 미공개 | Android 10 기반 AVOS, 5.5인치, RAM 2GB, 플래시 16GB, Cortex-A53 쿼드코어 | 사양만 확인; 공개 재활용 툴 미발견 · [후보 문서](devices/cashnote-pay.md) |
+| 티오더 주문 태블릿 | `T2N`, `torder pad` 계열 | T2N FCC 문서 기준 UNISOC T610, RAM 4GB, 저장공간 32GB, 10.1인치 1920×1200 | 모델별 사양 조사 · [후보 문서](devices/torder.md) |
 
 ## 별도 사용 안내
 
