@@ -1,0 +1,39 @@
+name: Sync archived device sources
+
+on:
+  schedule:
+    # Daily at 06:43 KST
+    - cron: "43 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate upstream without publishing
+        type: boolean
+        default: true
+
+permissions: {}
+concurrency: device-source-sync
+
+jobs:
+  sync:
+    if: github.repository == 'recrack/homelab-devices' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Check and update the approved source archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          python3 -B -m unittest discover -s scripts
+          if [[ "$DRY_RUN" == true ]]; then
+            bash sync.sh --check
+          else
+            bash sync.sh --publish
+          fi

@@ -20,6 +20,8 @@
 
 [KT_TABLE_TV](https://github.com/dasjjl-svg/KT_TABLE_TV)는 테이블 TV를 Home Assistant용 벽·탁상 대시보드로 활용하는 공개 프로젝트입니다.
 
+웹 패널과 서버 소스의 보존본은 [소스 아카이브 사용 안내](../UPSTREAM.md)에서 확인할 수 있습니다.
+
 - Android 5.1.1용 패널 앱과 서버, 한국어 설치·운영 문서를 제공합니다.
 - 온습도·CO₂, 날씨·예보, Home Assistant 장면과 세탁기 상태를 표시합니다.
 - 서버는 macOS, Ubuntu x86_64 Linux, Windows 11의 WSL2를 지원합니다. Windows 네이티브 서버와 Linux ARM64 빌드는 지원 범위에 없습니다.

@@ -1,0 +1,90 @@
+name: Weekly device research
+
+on:
+  schedule:
+    # Monday at 10:17 KST
+    - cron: "17 1 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Preview without creating an issue or PR
+        type: boolean
+        default: true
+
+permissions: {}
+concurrency: weekly-device-research
+
+jobs:
+  collect:
+    if: github.repository == 'recrack/homelab-devices' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    outputs:
+      candidates: ${{ steps.collect.outputs.candidates }}
+      issue: ${{ steps.collect.outputs.issue }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Collect and de-duplicate public sources
+        id: collect
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAVER_API_HUB_CLIENT_ID: ${{ secrets.NAVER_API_HUB_CLIENT_ID }}
+          NAVER_API_HUB_CLIENT_SECRET: ${{ secrets.NAVER_API_HUB_CLIENT_SECRET }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          if [[ "$DRY_RUN" == true ]]; then
+            python3 scripts/research.py collect
+          else
+            python3 scripts/research.py collect --write
+          fi
+
+  judge:
+    needs: collect
+    if: needs.collect.outputs.candidates != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      copilot-requests: write
+    outputs:
+      findings: ${{ steps.judge.outputs.findings }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Install Copilot CLI
+        run: npm install --global @github/copilot@1.0.117
+      - name: Judge which findings have enough evidence
+        id: judge
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RESEARCH_CANDIDATES: ${{ needs.collect.outputs.candidates }}
+        run: python3 scripts/research.py judge
+
+  propose:
+    needs: [collect, judge]
+    if: needs.collect.outputs.issue != '' && needs.judge.outputs.findings != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      - name: Open a research draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_ISSUE: ${{ needs.collect.outputs.issue }}
+          RESEARCH_FINDINGS: ${{ needs.judge.outputs.findings }}
+        run: python3 scripts/research.py publish
