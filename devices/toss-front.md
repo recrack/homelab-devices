@@ -19,9 +19,13 @@
 - 모두의 스마트홈 작성자는 토스 프론트 1.5세대에 집 구조와 Home Assistant 기기를 표시하는 HTML 대시보드를 띄웠다고 보고했습니다. [1.5세대 대시보드 구동 후기](https://cafe.naver.com/stsmarthome/119146)
 - 다른 작성자는 토스 프론트에 Immich 사진을 띄우고, 두 번 탭하면 Home Assistant 대시보드로 전환되게 구성했습니다. 글에 기기 세대는 나와 있지 않습니다. 이 구성에 사용한 Immich Frame Controller는 Home Assistant 애드온이나 Docker로 실행하며 액자별 화면 주소를 제공합니다. [전자액자 활용 후기](https://cafe.naver.com/stsmarthome/119950) · [Immich Frame Controller 소스](https://github.com/hyungyunlim/immich-ha-sa) · [한국어 안내](https://immich-frame.junlim.org/ko/)
 
-## 프론트 2 오디오 입력
+## 프론트 2의 Spotify와 USB 마이크
 
-한 SFF 작성자는 마이크 기능을 선언한 커스텀 LineageOS 빌드에서 외장 USB 무선 마이크로 녹음했다고 보고했습니다. 순정 펌웨어와 내장 마이크 동작은 확인되지 않았습니다. [SFF 외장 마이크 실사용 보고](https://m.dcinside.com/board/sff/1741473)
+한 SFF 작성자는 커스텀 LineageOS에서 Spotify가 Play 스토어 검색에 나오지 않았지만, APK를 따로 설치하자 실행됐다고 보고했습니다. Android가 마이크 기능을 보고하도록 빌드를 수정한 뒤에는 Play 스토어 검색에 나왔고, 외장 USB 무선 마이크로 녹음도 했습니다. 순정 펌웨어에서의 Spotify 노출과 USB 마이크 동작은 미확인입니다. [SFF 실사용 보고](https://m.dcinside.com/board/sff/1741473)
+
+Google Play는 앱이 요구하는 기능을 기기가 지원한다고 보고하는지 확인합니다. `RECORD_AUDIO` 권한은 앱에서 마이크를 선택 기능으로 명시하지 않으면 `android.hardware.microphone` 요구로 해석될 수 있습니다. 이 규칙은 후기의 검색 결과를 설명할 수 있습니다. 해당 Spotify 빌드의 매니페스트와 필터 조건은 별도로 확인하지 않았습니다. [Android 개발자 문서](https://developer.android.com/guide/topics/manifest/uses-feature-element#permissions)
+
+외장 마이크는 USB-C 전원 포트에 연결한 허브로 사용했습니다. 작성자 환경에서는 디버그용 microUSB 케이블을 빼야 허브와 기기 내장 이더넷이 동작했습니다. ADB도 쓸 경우에는 케이블을 빼기 전에 무선 ADB로 전환하라고 안내합니다. [SFF 연결 조건](https://m.dcinside.com/board/sff/1741473)
 
 ## 저장소
 
