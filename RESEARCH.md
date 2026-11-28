@@ -8,14 +8,12 @@
 | --- | --- |
 | GitHub | 기기명으로 최근 14일 안에 생성된 공개 저장소를 검색하고, 등록된 원본 프로젝트의 릴리스를 확인합니다. |
 | DC SFF | 공개 갤러리에서 기기명으로 검색한 뒤 최근 14일 안에 올라온 글을 확인합니다. |
-| 네이버 카페 | NAVER API HUB에서 기기별 최신 공개 글을 찾습니다. NAVER API HUB를 설정하지 않은 경우 SearXNG에서 검색 엔진이 색인한 공개 게시글 링크를 수집합니다. |
+| 네이버 카페 | pigma의 SearXNG에서 검색 엔진이 색인한 공개 게시글 링크를 수집합니다. |
 | [모두의 스마트홈](https://cafe.naver.com/stsmarthome) | 같은 기기명으로 이 카페의 공개 글을 별도로 찾습니다. 검색 결과의 카페 주소를 확인하고 일반 검색에 나온 동일 글과 합칩니다. |
 
 최근 14일을 확인해 주간 실행이 지연됐을 때도 겹치는 기간을 다시 확인합니다. 문서와 이전 자동 이슈에 있는 URL은 제외하고, DC 모바일·데스크톱 링크처럼 주소만 다른 같은 글을 한 건으로 처리합니다. 새 후보가 있으면 제목과 원문 주소를 이슈에 올립니다. 출처별 성공·실패는 Actions 실행 요약에 표시됩니다.
 
-SearXNG를 사용하려면 HTTPS 검색 주소와 게이트웨이 키를 [저장소의 Actions Secrets](https://github.com/recrack/homelab-devices/settings/secrets/actions)에 **SEARCH_URL**과 **SEARCH_API_KEY**로 등록합니다. SearXNG 검색 결과의 제목과 주소는 이슈 후보로 남깁니다. 검색 요약은 원문 근거 검사에 사용하지 않습니다. [SearXNG 검색 API](https://docs.searxng.org/dev/search_api.html)
-
-[NAVER API HUB](https://api.ncloud-docs.com/docs/naver-api-hub-search-cafearticle)를 사용하려면 검색용 **NAVER_API_HUB_CLIENT_ID**와 **NAVER_API_HUB_CLIENT_SECRET**을 같은 곳에 등록합니다. 두 검색 설정이 모두 비어 있으면 GitHub와 DC SFF를 수집합니다.
+SearXNG의 HTTPS 주소와 게이트웨이 키는 [저장소의 Actions Secrets](https://github.com/recrack/homelab-devices/settings/secrets/actions)의 **SEARCH_URL**과 **SEARCH_API_KEY**를 사용합니다. 검색 결과의 제목과 주소를 이슈에 남깁니다. 카페 글의 내용은 이슈에서 링크를 열어 확인합니다. [SearXNG 검색 API](https://docs.searxng.org/dev/search_api.html)
 
 ## 이슈에서 초안 PR까지
 

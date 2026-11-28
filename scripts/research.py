@@ -206,25 +206,16 @@ def dc():
     return found
 
 
-def naver_article(article):
-    item = candidate(NAVER_SOURCE, article["title"], article["link"], article.get("description"))
-    if not item["url"] or not item["url"].startswith("https://cafe.naver.com/"):
-        return {**item, "url": None}
-    cafe = urllib.parse.urlsplit(article.get("cafeurl") or "")
-    cafe_url = urllib.parse.urlunsplit(("https", cafe.netloc.lower().removeprefix("m."), cafe.path.lower().rstrip("/"), "", ""))
-    if item["url"].startswith(SMART_HOME_URL + "/") or cafe_url == SMART_HOME_URL:
-        article_id = item["url"].rsplit("/", 1)[-1]
-        item["url"] = f"{SMART_HOME_URL}/{article_id}"
-        item["source"] = SMART_HOME_SOURCE
-    return item
-
-
 def searxng_cafes():
-    endpoint = urllib.parse.urlsplit(os.environ["SEARCH_URL"])
+    configured_url = os.getenv("SEARCH_URL")
     key = os.getenv("SEARCH_API_KEY")
+    if not configured_url or not key:
+        note("네이버 카페 및 모두의 스마트홈 · SearXNG 검색 설정이 필요합니다.")
+        return []
+    endpoint = urllib.parse.urlsplit(configured_url)
     if (endpoint.scheme != "https" or not endpoint.hostname or endpoint.username is not None
-            or endpoint.path.rstrip("/") not in {"", "/search"} or endpoint.query or endpoint.fragment or not key):
-        raise ValueError("SearXNG requires an HTTPS /search URL and a gateway key")
+            or endpoint.path.rstrip("/") not in {"", "/search"} or endpoint.query or endpoint.fragment):
+        raise ValueError("SearXNG requires an HTTPS /search URL")
     search_url = urllib.parse.urlunsplit((endpoint.scheme, endpoint.netloc, "/search", "", ""))
     headers = {"Authorization": f"Bearer {key}"}
     cafe_host = urllib.parse.urlsplit(SMART_HOME_URL).netloc
@@ -248,45 +239,16 @@ def searxng_cafes():
         for row in results:
             if not isinstance(row, dict) or not isinstance(row.get("url"), str) or not isinstance(row.get("title"), str):
                 continue
-            item = naver_article({"title": row.get("title", ""), "link": row.get("url", "")})
-            if item["url"] and (site == cafe_host or item["source"] == SMART_HOME_SOURCE):
-                item["reference"] = "searxng"
-                found.append(item)
+            item = candidate(NAVER_SOURCE, row["title"], row["url"])
+            url = item["url"]
+            if not url or not url.startswith(f"https://{cafe_host}/"):
+                continue
+            if url.startswith(SMART_HOME_URL + "/"):
+                item["source"] = SMART_HOME_SOURCE
+            elif site != cafe_host:
+                continue
+            found.append(item)
     note(f"SearXNG · 검색 {completed}/{len(sites)}회 완료 · 카페 게시글 후보 {len(found)}건")
-    return found
-
-
-def naver():
-    client_id = os.getenv("NAVER_API_HUB_CLIENT_ID")
-    client_secret = os.getenv("NAVER_API_HUB_CLIENT_SECRET")
-    if not client_id or not client_secret:
-        if os.getenv("SEARCH_URL"):
-            return searxng_cafes()
-        note("네이버 카페 및 모두의 스마트홈 · SearXNG 또는 NAVER API HUB 설정이 필요합니다.")
-        return []
-    headers = {"X-NCP-APIGW-API-KEY-ID": client_id, "X-NCP-APIGW-API-KEY": client_secret}
-
-    def search(term, display):
-        query = urllib.parse.urlencode({"query": term, "sort": "date", "display": display})
-        result = json.loads(fetch("https://naverapihub.apigw.ntruss.com/search/v1/cafearticle?" + query, headers))
-        return [naver_article(article) for article in result["items"]]
-
-    found = []
-    scoped_search = True
-    for term in KOREAN_QUERIES:
-        if scoped_search:
-            try:
-                scoped = search(f"cafe:{SMART_HOME_URL.removeprefix('https://')} {term}", 5)
-                found.extend(item for item in scoped if item["source"] == SMART_HOME_SOURCE)
-            except urllib.error.HTTPError as error:
-                if error.code != 400:
-                    raise
-                scoped_search = False
-                note("모두의 스마트홈 · 카페 지정어가 거절되어 일반 검색 결과의 카페 주소로 확인합니다.")
-        # The API documents keyword search. In case it ignores the UI's cafe: operator,
-        # also look for this cafe in a wider window of ordinary results.
-        found.extend(item for index, item in enumerate(search(term, 30))
-                     if index < 5 or item["source"] == SMART_HOME_SOURCE)
     return found
 
 
@@ -310,7 +272,6 @@ def candidate_metadata(items):
 
 def enrich(items):
     robots = None
-    naver_evidence = None
     for item in items:
         item["evidence"] = ""
         try:
@@ -332,11 +293,6 @@ def enrich(items):
                     if match:
                         body = re.sub(r"<(?:script|style)\b[^>]*>.*?</(?:script|style)>", "", match[1], flags=re.S | re.I)
                         item["evidence"] = text(body)[:2200]
-            elif item["source"] in {NAVER_SOURCE, SMART_HOME_SOURCE} and item["reference"] != "searxng":
-                if naver_evidence is None:
-                    naver_evidence = {}
-                    naver_evidence.update({article["url"]: article["evidence"] for article in naver()})
-                item["evidence"] = naver_evidence.get(item["url"], "")
         except (OSError, ValueError, KeyError, subprocess.CalledProcessError):
             note(f"{item['source']} · 원문 확인 실패. 후보로만 남깁니다.")
 
@@ -354,7 +310,7 @@ def collect(dry_run):
                 known.update(links(body))
 
     sources = []
-    for label, provider in (("GitHub", github), ("DC SFF", dc), ("네이버 카페", naver)):
+    for label, provider in (("GitHub", github), ("DC SFF", dc), (NAVER_SOURCE, searxng_cafes)):
         try:
             found = provider()
             note(f"{label} · 수집 {len(found)}건")
@@ -446,7 +402,7 @@ Evidence follows as JSON:
          "--sync-session=off"],
         check=True, text=True, stdout=subprocess.PIPE, timeout=240,
         env={key: value for key, value in os.environ.items()
-             if not key.startswith("NAVER_API_HUB_") and key != "RESEARCH_CANDIDATES"},
+             if key not in {"SEARCH_URL", "SEARCH_API_KEY", "RESEARCH_CANDIDATES"}},
     )
     answer = result.stdout.strip()
     if fenced := re.fullmatch(r"\x60\x60\x60(?:json)?\s*(.*?)\s*\x60\x60\x60", answer, re.S):
