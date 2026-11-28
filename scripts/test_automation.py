@@ -106,6 +106,59 @@ class ResearchTests(unittest.TestCase):
         ):
             self.assertEqual([item["source"] for item in naver()], [SMART_HOME_SOURCE])
 
+    def test_searxng_uses_gateway_and_accepts_only_cafe_articles(self):
+        keys = {
+            "SEARCH_URL": "https://search.example.com",
+            "SEARCH_API_KEY": "test-key",
+            "NAVER_API_HUB_CLIENT_ID": "",
+            "NAVER_API_HUB_CLIENT_SECRET": "",
+        }
+        smart = {
+            "url": "https://m.cafe.naver.com/stsmarthome/42?from=search",
+            "title": "토스 프론트 대시보드", "content": "검색 엔진 요약",
+        }
+        other = {"url": "https://cafe.naver.com/other/45", "title": "토스 프론트"}
+        unrelated = {"url": "https://github.com/org/example", "title": "토스 프론트"}
+        home = {"url": "https://cafe.naver.com/stsmarthome", "title": "카페 홈"}
+        queries = []
+
+        def fetch(url, headers):
+            endpoint = urllib.parse.urlsplit(url)
+            self.assertEqual((endpoint.scheme, endpoint.netloc, endpoint.path), ("https", "search.example.com", "/search"))
+            self.assertEqual(headers, {"Authorization": "Bearer test-key"})
+            params = urllib.parse.parse_qs(endpoint.query)
+            self.assertEqual(params["format"], ["json"])
+            queries.append(params["q"][0])
+            return json.dumps({"results": [smart, other, unrelated, home]})
+
+        with (
+            patch.dict(os.environ, keys),
+            patch("research.KOREAN_QUERIES", ("토스 프론트",)),
+            patch("research.fetch", fetch),
+            patch("research.note"),
+        ):
+            results = new_candidates(naver(), set())
+            self.assertEqual(queries, ["site:cafe.naver.com/stsmarthome 토스 프론트",
+                                       'site:cafe.naver.com ("토스 프론트")'])
+            self.assertEqual([item["url"] for item in results],
+                             ["https://cafe.naver.com/stsmarthome/42", "https://cafe.naver.com/other/45"])
+            metadata = candidate_metadata(results)
+            enrich(metadata)
+            self.assertEqual([item["evidence"] for item in metadata], ["", ""])
+            self.assertEqual(len(queries), 2)
+
+    def test_searxng_refuses_to_send_key_over_http(self):
+        keys = {
+            "SEARCH_URL": "http://search.example.com",
+            "SEARCH_API_KEY": "test-key",
+            "NAVER_API_HUB_CLIENT_ID": "",
+            "NAVER_API_HUB_CLIENT_SECRET": "",
+        }
+        with patch.dict(os.environ, keys), patch("research.fetch") as fetch:
+            with self.assertRaisesRegex(ValueError, "HTTPS"):
+                naver()
+            fetch.assert_not_called()
+
 
 class SyncTests(unittest.TestCase):
     def test_rejects_symlinks_and_changed_license(self):

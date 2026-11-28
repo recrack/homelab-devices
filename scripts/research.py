@@ -219,11 +219,50 @@ def naver_article(article):
     return item
 
 
+def searxng_cafes():
+    endpoint = urllib.parse.urlsplit(os.environ["SEARCH_URL"])
+    key = os.getenv("SEARCH_API_KEY")
+    if (endpoint.scheme != "https" or not endpoint.hostname or endpoint.username is not None
+            or endpoint.path.rstrip("/") not in {"", "/search"} or endpoint.query or endpoint.fragment or not key):
+        raise ValueError("SearXNG requires an HTTPS /search URL and a gateway key")
+    search_url = urllib.parse.urlunsplit((endpoint.scheme, endpoint.netloc, "/search", "", ""))
+    headers = {"Authorization": f"Bearer {key}"}
+    cafe_host = urllib.parse.urlsplit(SMART_HOME_URL).netloc
+    sites = [(SMART_HOME_URL.removeprefix("https://"), term) for term in KOREAN_QUERIES]
+    related = " OR ".join(f'"{term}"' for term in KOREAN_QUERIES)
+    sites.append((cafe_host, f"({related})"))
+
+    found = []
+    completed = 0
+    for site, term in sites:
+        query = urllib.parse.urlencode({"q": f"site:{site} {term}", "format": "json", "language": "ko"})
+        try:
+            results = json.loads(fetch(f"{search_url}?{query}", headers))["results"]
+            if not isinstance(results, list):
+                raise ValueError("Invalid SearXNG results")
+            completed += 1
+        except (OSError, ValueError, KeyError) as error:
+            reason = f"HTTP {error.code}" if isinstance(error, urllib.error.HTTPError) else type(error).__name__
+            note(f"SearXNG · 검색 실패 ({reason})")
+            break
+        for row in results:
+            if not isinstance(row, dict) or not isinstance(row.get("url"), str) or not isinstance(row.get("title"), str):
+                continue
+            item = naver_article({"title": row.get("title", ""), "link": row.get("url", "")})
+            if item["url"] and (site == cafe_host or item["source"] == SMART_HOME_SOURCE):
+                item["reference"] = "searxng"
+                found.append(item)
+    note(f"SearXNG · 검색 {completed}/{len(sites)}회 완료 · 카페 게시글 후보 {len(found)}건")
+    return found
+
+
 def naver():
     client_id = os.getenv("NAVER_API_HUB_CLIENT_ID")
     client_secret = os.getenv("NAVER_API_HUB_CLIENT_SECRET")
     if not client_id or not client_secret:
-        note("네이버 카페 및 모두의 스마트홈 · NAVER API HUB 검색 키가 필요합니다.")
+        if os.getenv("SEARCH_URL"):
+            return searxng_cafes()
+        note("네이버 카페 및 모두의 스마트홈 · SearXNG 또는 NAVER API HUB 설정이 필요합니다.")
         return []
     headers = {"X-NCP-APIGW-API-KEY-ID": client_id, "X-NCP-APIGW-API-KEY": client_secret}
 
@@ -293,7 +332,7 @@ def enrich(items):
                     if match:
                         body = re.sub(r"<(?:script|style)\b[^>]*>.*?</(?:script|style)>", "", match[1], flags=re.S | re.I)
                         item["evidence"] = text(body)[:2200]
-            elif item["source"] in {NAVER_SOURCE, SMART_HOME_SOURCE}:
+            elif item["source"] in {NAVER_SOURCE, SMART_HOME_SOURCE} and item["reference"] != "searxng":
                 if naver_evidence is None:
                     naver_evidence = {}
                     naver_evidence.update({article["url"]: article["evidence"] for article in naver()})
@@ -328,7 +367,7 @@ def collect(dry_run):
     note(f"중복 제거 후 새 후보 {len(items)}건")
     if not items:
         return
-    body = f"{MARKER}\n\n모델 분석 전 수집한 후보입니다. 네이버 카페 검색 결과에는 게시일이 제공되지 않습니다.\n"
+    body = f"{MARKER}\n\n모델 분석 전 수집한 후보입니다. 일부 네이버 카페 검색 결과에는 게시일이 제공되지 않습니다.\n"
     for item in items:
         date = f" · {item['date']}" if item["date"] else ""
         body += f"\n- {item['source']}{date} · {literal(item['title'])} · <{item['url']}>"
