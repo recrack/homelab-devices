@@ -37,6 +37,9 @@ KOREAN_QUERIES = (
     "토스 프론트", "네이버 커넥트", "네이버페이 커넥트", "기가지니 테이블",
     "티오더", "포스기", "주문 태블릿",
 )
+NAVER_SOURCE = "네이버 카페"
+SMART_HOME_SOURCE = "모두의 스마트홈"
+SMART_HOME_URL = "https://cafe.naver.com/stsmarthome"
 URL = re.compile(r"https?://[^\s<>\"'\])]+")
 OUT_OF_SCOPE = re.compile(
     r"\b(?:cve-\d{4}-\d+|exploit\w*|fastbrick|amonet)\b|익스플로잇|잠금\s*우회|보안\s*우회",
@@ -203,21 +206,48 @@ def dc():
     return found
 
 
+def naver_article(article):
+    item = candidate(NAVER_SOURCE, article["title"], article["link"], article.get("description"))
+    if not item["url"] or not item["url"].startswith("https://cafe.naver.com/"):
+        return {**item, "url": None}
+    cafe = urllib.parse.urlsplit(article.get("cafeurl") or "")
+    cafe_url = urllib.parse.urlunsplit(("https", cafe.netloc.lower().removeprefix("m."), cafe.path.lower().rstrip("/"), "", ""))
+    if item["url"].startswith(SMART_HOME_URL + "/") or cafe_url == SMART_HOME_URL:
+        article_id = item["url"].rsplit("/", 1)[-1]
+        item["url"] = f"{SMART_HOME_URL}/{article_id}"
+        item["source"] = SMART_HOME_SOURCE
+    return item
+
+
 def naver():
     client_id = os.getenv("NAVER_API_HUB_CLIENT_ID")
     client_secret = os.getenv("NAVER_API_HUB_CLIENT_SECRET")
     if not client_id or not client_secret:
-        note("네이버 카페 · NAVER API HUB 검색 키가 필요합니다.")
+        note("네이버 카페 및 모두의 스마트홈 · NAVER API HUB 검색 키가 필요합니다.")
         return []
     headers = {"X-NCP-APIGW-API-KEY-ID": client_id, "X-NCP-APIGW-API-KEY": client_secret}
-    found = []
-    for term in KOREAN_QUERIES:
-        query = urllib.parse.urlencode({"query": term, "sort": "date", "display": 5})
+
+    def search(term, display):
+        query = urllib.parse.urlencode({"query": term, "sort": "date", "display": display})
         result = json.loads(fetch("https://naverapihub.apigw.ntruss.com/search/v1/cafearticle?" + query, headers))
-        for article in result["items"]:
-            found.append(candidate(
-                "네이버 카페", article["title"], article["link"], article.get("description"),
-            ))
+        return [naver_article(article) for article in result["items"]]
+
+    found = []
+    scoped_search = True
+    for term in KOREAN_QUERIES:
+        if scoped_search:
+            try:
+                scoped = search(f"cafe:{SMART_HOME_URL.removeprefix('https://')} {term}", 5)
+                found.extend(item for item in scoped if item["source"] == SMART_HOME_SOURCE)
+            except urllib.error.HTTPError as error:
+                if error.code != 400:
+                    raise
+                scoped_search = False
+                note("모두의 스마트홈 · 카페 지정어가 거절되어 일반 검색 결과의 카페 주소로 확인합니다.")
+        # The API documents keyword search. In case it ignores the UI's cafe: operator,
+        # also look for this cafe in a wider window of ordinary results.
+        found.extend(item for index, item in enumerate(search(term, 30))
+                     if index < 5 or item["source"] == SMART_HOME_SOURCE)
     return found
 
 
@@ -263,7 +293,7 @@ def enrich(items):
                     if match:
                         body = re.sub(r"<(?:script|style)\b[^>]*>.*?</(?:script|style)>", "", match[1], flags=re.S | re.I)
                         item["evidence"] = text(body)[:2200]
-            elif item["source"] == "네이버 카페":
+            elif item["source"] in {NAVER_SOURCE, SMART_HOME_SOURCE}:
                 if naver_evidence is None:
                     naver_evidence = {}
                     naver_evidence.update({article["url"]: article["evidence"] for article in naver()})

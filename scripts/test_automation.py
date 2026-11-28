@@ -1,8 +1,16 @@
+import json
+import os
 import tempfile
 import unittest
+import urllib.error
+import urllib.parse
 from pathlib import Path
+from unittest.mock import patch
 
-from research import candidate, candidate_metadata, canonical, dc_rows, new_candidates, reviewed_rows
+from research import (
+    NAVER_SOURCE, SMART_HOME_SOURCE, candidate, candidate_metadata, canonical,
+    dc_rows, enrich, naver, new_candidates, reviewed_rows,
+)
 from sync_kt_panel import archive_files, source_paths, validate_notice
 
 
@@ -51,6 +59,52 @@ class ResearchTests(unittest.TestCase):
         metadata = candidate_metadata([item])
         self.assertNotIn("evidence", metadata[0])
         self.assertEqual(metadata[0]["url"], item["url"])
+
+    def test_smart_home_can_be_found_in_both_searches_and_enriched(self):
+        smart = {
+            "title": "토스 프론트 대시보드", "description": "작성자가 화면을 확인했습니다.",
+            "link": "https://m.cafe.naver.com/ca-fe/web/cafes/12345/articles/42",
+            "cafeurl": "http://m.cafe.naver.com/stsmarthome/",
+        }
+        general = [
+            {"title": "토스 프론트", "link": f"https://cafe.naver.com/other/{index}"}
+            for index in range(6)
+        ]
+        named_link = {**smart, "link": "https://cafe.naver.com/stsmarthome/42?from=search"}
+        queries = []
+
+        def fetch(url, headers):
+            params = urllib.parse.parse_qs(urllib.parse.urlsplit(url).query)
+            self.assertEqual(params["sort"], ["date"])
+            term = params["query"][0]
+            queries.append(term)
+            if term.startswith("cafe:"):
+                return json.dumps({"items": [general[-1], smart]})
+            return json.dumps({"items": [*general, named_link]})
+
+        keys = {"NAVER_API_HUB_CLIENT_ID": "test", "NAVER_API_HUB_CLIENT_SECRET": "test"}
+        with patch.dict(os.environ, keys), patch("research.KOREAN_QUERIES", ("토스 프론트",)), patch("research.fetch", fetch):
+            items = naver()
+            candidates = new_candidates(items, set())
+            self.assertEqual(queries, ["cafe:cafe.naver.com/stsmarthome 토스 프론트", "토스 프론트"])
+            self.assertEqual([item["source"] for item in candidates], [SMART_HOME_SOURCE] + [NAVER_SOURCE] * 5)
+            self.assertEqual(candidates[0]["url"], "https://cafe.naver.com/stsmarthome/42")
+            self.assertEqual(len(new_candidates(items, {"https://cafe.naver.com/stsmarthome/42"})), 5)
+            metadata = candidate_metadata(candidates)
+            enrich(metadata)
+            self.assertEqual(metadata[0]["evidence"], smart["description"])
+
+    def test_smart_home_falls_back_when_search_rejects_cafe_operator(self):
+        smart = {"title": "토스 프론트", "link": "https://cafe.naver.com/stsmarthome/42"}
+        rejected = urllib.error.HTTPError("https://example.com", 400, "Invalid query", None, None)
+        keys = {"NAVER_API_HUB_CLIENT_ID": "test", "NAVER_API_HUB_CLIENT_SECRET": "test"}
+        with (
+            patch.dict(os.environ, keys),
+            patch("research.KOREAN_QUERIES", ("토스 프론트",)),
+            patch("research.fetch", side_effect=[rejected, json.dumps({"items": [smart]})]),
+            patch("research.note"),
+        ):
+            self.assertEqual([item["source"] for item in naver()], [SMART_HOME_SOURCE])
 
 
 class SyncTests(unittest.TestCase):
